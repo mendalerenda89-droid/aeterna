@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>AETERNUS Arde Lucus — Campamento</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --gold-dim: #7A6030;
+  --red: #8B1A1A;
+  --red-bright: #C0392B;
+  --green: #1A5C2A;
+  --green-bright: #27AE60;
+  --bg: #0A0805;
+  --bg2: #111009;
+  --bg3: #1A1710;
+  --bg4: #242018;
+  --border: rgba(201,168,76,0.2);
+  --border-strong: rgba(201,168,76,0.5);
+  --text: #E8DCC8;
+  --text-dim: #8A7D66;
+  --text-muted: #554E3E;
+  --romano: #8B2020;
+  --castrexo: #1A4A2A;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Crimson Text', Georgia, serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* Evitar zoom accidental en iOS */
+  touch-action: manipulation;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,168,76,0.06) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9A84C' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ——— PANTALLA DE SELECCIÓN ——— */
+#pantalla-seleccion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.logo-sel {
+  font-family: 'Cinzel', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 6px;
+  text-shadow: 0 0 30px rgba(201,168,76,0.4);
+  margin-bottom: 6px;
+}
+.logo-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 5px;
+  color: var(--text-muted);
+  margin-bottom: 48px;
+}
+
+.sel-titulo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.rama-section { width: 100%; max-width: 420px; margin-bottom: 20px; }
+.rama-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 4px 4px 0 0;
+  display: block;
+  text-align: left;
+}
+.rama-label.romano { background: rgba(139,32,32,0.4); color: #E07070; border: 1px solid rgba(139,32,32,0.4); border-bottom: none; }
+.rama-label.castrexo { background: rgba(26,74,42,0.4); color: #70C090; border: 1px solid rgba(26,74,42,0.4); border-bottom: none; }
+
+.campamentos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+}
+
+.camp-btn {
+  background: var(--bg3);
+  border: none;
+  border-right: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 18px 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  line-height: 1.3;
+}
+.camp-btn:last-child { border-right: none; }
+.camp-btn:hover, .camp-btn:active { background: rgba(201,168,76,0.1); color: var(--gold); }
+.camp-btn.selected-romano { background: rgba(139,32,32,0.3); color: #E07070; border-color: rgba(139,32,32,0.4); }
+.camp-btn.selected-castrexo { background: rgba(26,74,42,0.3); color: #70C090; border-color: rgba(26,74,42,0.4); }
+
+/* ——— HEADER (APP) ——— */
+.header {
+  background: rgba(10,8,5,0.97);
+  border-bottom: 1px solid var(--border-strong);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-id {
+  display: flex;
+  flex-direction: column;
+}
+.header-campamento {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+.header-rama {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.btn-cambiar {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-cambiar:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+/* ——— NAV TABS ——— */
+.nav-tabs {
+  display: flex;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+}
+.tab {
+  flex: 1;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  padding: 14px 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  text-align: center;
+  text-transform: uppercase;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.tab .tab-icon { font-size: 1.1rem; }
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.tab .badge {
+  background: var(--red-bright);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 0.5rem;
+  padding: 1px 5px;
+  font-weight: 700;
+  display: none;
+}
+.tab .badge.visible { display: inline; }
+
+/* ——— MAIN ——— */
+.main { flex: 1; padding: 16px; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ——— GRUPOS EN ARENA ——— */
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.grupos-list { display: flex; flex-direction: column; gap: 10px; }
+
+.grupo-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.grupo-card.mi-rama {
+  border-color: var(--border-strong);
+  box-shadow: 0 0 20px rgba(201,168,76,0.08);
+}
+.grupo-card.otra-rama { opacity: 0.45; }
+
+.card-stripe { height: 3px; }
+.card-stripe.ROMANO { background: linear-gradient(90deg, var(--romano), #C0392B); }
+.card-stripe.CASTREXO { background: linear-gradient(90deg, var(--castrexo), #27AE60); }
+
+.card-body { padding: 14px 16px; }
+
+.grupo-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.grupo-nombre {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.grupo-rama {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  letter-spacing: 2px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.grupo-rama.ROMANO { background: rgba(139,32,32,0.3); color: #E07070; border: 1px solid rgba(139,32,32,0.4); }
+.grupo-rama.CASTREXO { background: rgba(26,74,42,0.3); color: #70C090; border: 1px solid rgba(26,74,42,0.4); }
+
+.mi-rama-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  letter-spacing: 2px;
+  color: var(--gold);
+  background: rgba(201,168,76,0.12);
+  border: 1px solid rgba(201,168,76,0.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Botones P1 / P2 — GRANDES para táctil */
+.prueba-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-prueba {
+  padding: 22px 10px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  color: var(--text-muted);
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.btn-prueba .check-icon { font-size: 1.4rem; }
+.btn-prueba:active { transform: scale(0.96); }
+
+.btn-prueba.done {
+  background: rgba(39,174,96,0.15);
+  border-color: var(--green-bright);
+  color: var(--green-bright);
+  box-shadow: 0 0 16px rgba(39,174,96,0.2);
+}
+.btn-prueba.pendiente {
+  background: rgba(255,255,255,0.02);
+  border-color: rgba(255,255,255,0.1);
+  color: var(--text-muted);
+}
+.btn-prueba.pendiente:hover {
+  border-color: var(--gold-dim);
+  color: var(--gold-dim);
+}
+
+/* Card bloqueada (no es mi rama) */
+.card-locked {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 0 0;
+  opacity: 0.6;
+}
+.lock-dots { display: flex; gap: 4px; }
+.lock-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--bg4);
+  border: 1px solid #333;
+}
+.lock-dot.done { background: var(--green-bright); border-color: var(--green-bright); }
+
+/* ——— CHAT ——— */
+.chat-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px 10px 0 0;
+  height: 340px;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scroll-behavior: smooth;
+}
+.chat-box::-webkit-scrollbar { width: 3px; }
+.chat-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.msg { display: flex; flex-direction: column; max-width: 85%; }
+.msg.yo { align-self: flex-end; align-items: flex-end; }
+.msg.otro { align-self: flex-start; align-items: flex-start; }
+.msg.principal { align-self: flex-start; align-items: flex-start; }
+
+.msg-rem {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  letter-spacing: 2px;
+  margin-bottom: 3px;
+}
+.msg.yo .msg-rem { color: var(--gold-dim); }
+.msg.otro .msg-rem { color: #4A7FA5; }
+.msg.principal .msg-rem { color: var(--gold); }
+
+.msg-txt {
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.msg.yo .msg-txt {
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 10px 10px 2px 10px;
+}
+.msg.otro .msg-txt, .msg.principal .msg-txt {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px 10px 10px 2px;
+}
+.msg.principal .msg-txt {
+  border-color: rgba(201,168,76,0.25);
+  background: rgba(201,168,76,0.06);
+}
+
+.msg.sistema { align-self: center; align-items: center; }
+.msg.sistema .msg-rem { color: var(--text-muted); }
+.msg.sistema .msg-txt {
+  background: transparent;
+  border: 1px dashed rgba(255,255,255,0.1);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 6px 12px;
+}
+
+.chat-input-wrap {
+  display: flex;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+}
+.chat-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem;
+  padding: 14px 16px;
+  outline: none;
+}
+.chat-input::placeholder { color: var(--text-muted); }
+.btn-send {
+  background: var(--gold);
+  border: none;
+  color: #1A1200;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  padding: 0 18px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-send:active { background: var(--gold-light); }
+
+/* ——— BOTÓN PÁNICO ——— */
+.panico-wrap { margin-top: 14px; }
+
+.btn-panico {
+  width: 100%;
+  padding: 20px;
+  background: rgba(139,26,26,0.2);
+  border: 2px solid rgba(139,26,26,0.4);
+  border-radius: 10px;
+  color: #E07070;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.btn-panico:active {
+  background: rgba(192,57,43,0.35);
+  border-color: rgba(192,57,43,0.6);
+  transform: scale(0.98);
+}
+.panico-icon { font-size: 1.3rem; }
+
+/* ——— ESTADO: sin grupos ——— */
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--text-muted);
+}
+.empty-icon { font-size: 2.5rem; opacity: 0.3; margin-bottom: 12px; }
+.empty-state p { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 2px; }
+
+/* ——— TOAST ——— */
+#toast-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+.toast {
+  background: var(--bg3);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  color: var(--text);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  animation: toastIn 0.3s ease;
+  white-space: nowrap;
+}
+.toast.ok { border-color: rgba(39,174,96,0.5); color: #70C090; }
+.toast.err { border-color: rgba(192,57,43,0.5); color: #E07070; }
+.toast.warn { border-color: rgba(201,168,76,0.5); color: var(--gold); }
+@keyframes toastIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* ——— MODAL PÁNICO ——— */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg3);
+  border: 1px solid rgba(139,26,26,0.6);
+  border-radius: 14px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+  text-align: center;
+}
+.modal-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.modal h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 3px;
+  color: #E07070;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+.modal p { color: var(--text-dim); margin-bottom: 24px; font-size: 0.95rem; line-height: 1.5; }
+.modal-btns { display: flex; gap: 10px; }
+.modal-btns button { flex: 1; padding: 14px; border-radius: 8px; font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 2px; font-weight: 700; cursor: pointer; border: none; }
+.btn-cancelar { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border) !important; }
+.btn-confirmar-panico { background: var(--red-bright); color: #fff; }
+
+/* ——— NUEVO MENSAJE (notif) ——— */
+@keyframes ping {
+  0% { transform: scale(1); opacity: 1; }
+  75%, 100% { transform: scale(1.8); opacity: 0; }
+}
+.ping { animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
+
+/* ——— INDICADOR CONEXIÓN ——— */
+.conn-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  letter-spacing: 2px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  transition: all 0.4s ease;
+  white-space: nowrap;
+}
+.conn-indicator.online {
+  background: rgba(39,174,96,0.1);
+  border-color: rgba(39,174,96,0.3);
+  color: #70C090;
+}
+.conn-indicator.offline {
+  background: rgba(192,57,43,0.15);
+  border-color: rgba(192,57,43,0.4);
+  color: #E07070;
+}
+.conn-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.4s;
+}
+.conn-indicator.online .conn-dot {
+  background: #27AE60;
+  box-shadow: 0 0 6px rgba(39,174,96,0.7);
+  animation: connPulse 2s ease-in-out infinite;
+}
+.conn-indicator.offline .conn-dot {
+  background: #C0392B;
+  box-shadow: 0 0 6px rgba(192,57,43,0.7);
+}
+@keyframes connPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Banner de desconexión */
+.offline-banner {
+  display: none;
+  background: rgba(139,26,26,0.25);
+  border-bottom: 1px solid rgba(192,57,43,0.4);
+  padding: 8px 16px;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: #E07070;
+  position: sticky;
+  top: 53px;
+  z-index: 99;
+}
+.offline-banner.visible { display: block; }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- PANTALLA SELECCIÓN CAMPAMENTO -->
+  <div id="pantalla-seleccion">
+    <div class="logo-sel">🏛 AETERNUS ARDE LUCUS</div>
+    <div class="logo-sub">25 AÑOS · UNA CIUDAD · UN DESTINO</div>
+    <div class="sel-titulo">Selecciona tu campamento</div>
+
+    <div class="rama-section">
+      <span class="rama-label romano">⚔️ Rama Romana</span>
+      <div class="campamentos-grid">
+        <button class="camp-btn" onclick="seleccionarCampamento('Cohors III', 'ROMANO')">Cohors III</button>
+        <button class="camp-btn" onclick="seleccionarCampamento('Caetra', 'ROMANO')">Caetra</button>
+        <button class="camp-btn" onclick="seleccionarCampamento('Pretoriana', 'ROMANO')">Pretoriana</button>
+      </div>
+    </div>
+
+    <div class="rama-section">
+      <span class="rama-label castrexo">🌿 Rama Castrexa</span>
+      <div class="campamentos-grid">
+        <button class="camp-btn" onclick="seleccionarCampamento('Lugdunum', 'CASTREXO')">Lugdunum</button>
+        <button class="camp-btn" onclick="seleccionarCampamento('Treba Lucis', 'CASTREXO')">Treba Lucis</button>
+        <button class="camp-btn" onclick="seleccionarCampamento('Terra Copora', 'CASTREXO')">Terra Copora</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APP PRINCIPAL (oculta hasta seleccionar) -->
+  <div id="app-principal" style="display:none; flex-direction:column; min-height:100vh;">
+
+    <header class="header">
+      <div class="header-id">
+        <div class="header-campamento" id="header-nombre">—</div>
+        <div class="header-rama" id="header-rama">—</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; margin-left:auto;">
+        <div class="conn-indicator online" id="conn-indicator">
+          <div class="conn-dot"></div>
+          <span id="conn-label">ONLINE</span>
+        </div>
+        <button class="btn-cambiar" onclick="cambiarCampamento()">Cambiar ↩</button>
+      </div>
+    </header>
+
+    <div class="offline-banner" id="offline-banner">⚠️ Sin conexión — los datos pueden no estar actualizados</div>
+
+    <nav class="nav-tabs">
+      <button class="tab active" onclick="switchTab('arena', this)">
+        <span class="tab-icon">⚔️</span>Arena
+      </button>
+      <button class="tab" onclick="switchTab('chat', this)">
+        <span class="tab-icon">📜</span>Chat
+        <span class="badge" id="chat-badge">!</span>
+      </button>
+    </nav>
+
+    <main class="main">
+
+      <!-- PANEL ARENA -->
+      <div class="panel active" id="panel-arena">
+        <div class="section-title">Grupos en la arena</div>
+        <div class="grupos-list" id="gruposActivos">
+          <div class="empty-state">
+            <div class="empty-icon">🏛️</div>
+            <p>Esperando grupos...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL CHAT -->
+      <div class="panel" id="panel-chat">
+        <div class="section-title">Chat de mando</div>
+        <div class="chat-box" id="chatBox"></div>
+        <div class="chat-input-wrap">
+          <input class="chat-input" id="msgChat" placeholder="Escribe un mensaje..." autocomplete="off" onkeydown="if(event.key==='Enter') enviarMensaje()">
+          <button class="btn-send" onclick="enviarMensaje()">Enviar</button>
+        </div>
+        <div class="panico-wrap">
+          <button class="btn-panico" onclick="abrirModalPanico()">
+            <span class="panico-icon">🚨</span>
+            Solicitar ayuda urgente
+          </button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODAL PÁNICO -->
+<div class="modal-overlay" id="modal-panico">
+  <div class="modal">
+    <div class="modal-icon">🚨</div>
+    <h2>¿Solicitar ayuda?</h2>
+    <p>Se enviará una alerta urgente al Maestro indicando que tu campamento necesita asistencia.</p>
+    <div class="modal-btns">
+      <button class="btn-cancelar" onclick="cerrarModalPanico()">Cancelar</button>
+      <button class="btn-confirmar-panico" onclick="confirmarPanico()">Enviar alerta</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="toast-container"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, query, orderBy,
+         doc, updateDoc, serverTimestamp, addDoc, limitToLast,
+         enableNetwork, disableNetwork
+       } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDmpGzOSToV8mFRkxSxLKL6Isoi_7lEU2E",
+  authDomain: "escape-room-arde-lucus.firebaseapp.com",
+  projectId: "escape-room-arde-lucus",
+  storageBucket: "escape-room-arde-lucus.firebasestorage.app",
+  messagingSenderId: "264728827438",
+  appId: "1:264728827438:web:a764eebccf4dcfc73771bf"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ——— ESTADO DE CONEXIÓN ———
+let estaConectado = true;
+let avisoDesconexionEnviado = false;
+
+function setConexion(online) {
+  if (online === estaConectado) return;
+  estaConectado = online;
+
+  const ind = document.getElementById('conn-indicator');
+  const lbl = document.getElementById('conn-label');
+  const banner = document.getElementById('offline-banner');
+
+  if (!ind) return; // App no iniciada todavía
+
+  if (online) {
+    ind.className = 'conn-indicator online';
+    lbl.textContent = 'ONLINE';
+    banner.classList.remove('visible');
+    toast('Conexión restaurada ✓', 'ok');
+    // Mensaje en el chat avisando de la reconexión
+    if (avisoDesconexionEnviado && identidad) {
+      addDoc(collection(db, "mensajes"), {
+        remitente: 'SISTEMA',
+        texto: `🟢 ${identidad} ha recuperado la conexión`,
+        fecha: serverTimestamp()
+      }).catch(() => {});
+    }
+    avisoDesconexionEnviado = false;
+  } else {
+    ind.className = 'conn-indicator offline';
+    lbl.textContent = 'OFFLINE';
+    banner.classList.add('visible');
+    toast('⚠️ Conexión perdida', 'err');
+    // Intentar mandar aviso al chat (puede fallar si no hay red)
+    if (!avisoDesconexionEnviado && identidad) {
+      avisoDesconexionEnviado = true;
+      // Usar fetch directo a Firestore REST como fallback por si onSnapshot ya falló
+      // Solo marcar — el mensaje se enviará cuando vuelva la conexión
+    }
+  }
+}
+
+// Detectar cambios de red del navegador
+window.addEventListener('online',  () => setConexion(true));
+window.addEventListener('offline', () => setConexion(false));
+
+const RAMAS = {
+  'Cohors III': 'ROMANO', 'Caetra': 'ROMANO', 'Pretoriana': 'ROMANO',
+  'Lugdunum': 'CASTREXO', 'Treba Lucis': 'CASTREXO', 'Terra Copora': 'CASTREXO'
+};
+
+// Estado
+let identidad = localStorage.getItem('camp_identidad') || null;
+let miRama = identidad ? RAMAS[identidad] : null;
+let chatNoLeidos = 0;
+let enChatPanel = false;
+let ultimoMsgCount = 0;
+
+// Snapshots activos
+let unsubArena = null;
+let unsubChat = null;
+
+// ——— TOAST ———
+function toast(msg, tipo = 'ok') {
+  const t = document.createElement('div');
+  t.className = `toast ${tipo}`;
+  t.textContent = msg;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ——— TABS ———
+window.switchTab = (panel, el) => {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + panel).classList.add('active');
+  enChatPanel = panel === 'chat';
+  if (enChatPanel) {
+    chatNoLeidos = 0;
+    document.getElementById('chat-badge').classList.remove('visible');
+    const chat = document.getElementById('chatBox');
+    setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 50);
+  }
+};
+
+// ——— SELECCIÓN DE CAMPAMENTO ———
+window.seleccionarCampamento = (nombre, rama) => {
+  identidad = nombre;
+  miRama = rama;
+  localStorage.setItem('camp_identidad', identidad);
+  iniciarApp();
+};
+
+window.cambiarCampamento = () => {
+  if (unsubArena) unsubArena();
+  if (unsubChat) unsubChat();
+  identidad = null; miRama = null;
+  localStorage.removeItem('camp_identidad');
+  document.getElementById('pantalla-seleccion').style.display = 'flex';
+  document.getElementById('app-principal').style.display = 'none';
+};
+
+function iniciarApp() {
+  document.getElementById('pantalla-seleccion').style.display = 'none';
+  document.getElementById('app-principal').style.display = 'flex';
+  document.getElementById('header-nombre').textContent = identidad;
+  document.getElementById('header-rama').textContent = miRama;
+
+  // Resetear al tab arena
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('.tab').classList.add('active');
+  document.getElementById('panel-arena').classList.add('active');
+  enChatPanel = false;
+
+  suscribirArena();
+  suscribirChat();
+}
+
+// ——— PRUEBAS ———
+window.togglePrueba = async (id, slot, estadoActual) => {
+  if (!identidad) return;
+  const key = `pruebas.${identidad}_${slot}`;
+  const update = {};
+  update[key] = !estadoActual;
+  try {
+    await updateDoc(doc(db, "seguimiento_activo", id), update);
+    toast(!estadoActual ? `${slot} completada ✓` : `${slot} desmarcada`);
+  } catch(e) {
+    toast('Error al actualizar', 'err');
+  }
+};
+
+// ——— CHAT ———
+window.enviarMensaje = async () => {
+  const texto = document.getElementById('msgChat').value.trim();
+  if (!texto || !identidad) return;
+  try {
+    await addDoc(collection(db, "mensajes"), {
+      remitente: identidad,
+      texto,
+      fecha: serverTimestamp()
+    });
+    document.getElementById('msgChat').value = "";
+  } catch(e) { toast('Error al enviar', 'err'); }
+};
+
+// ——— PÁNICO ———
+window.abrirModalPanico = () => {
+  document.getElementById('modal-panico').classList.add('open');
+};
+window.cerrarModalPanico = () => {
+  document.getElementById('modal-panico').classList.remove('open');
+};
+window.confirmarPanico = async () => {
+  cerrarModalPanico();
+  try {
+    await addDoc(collection(db, "mensajes"), {
+      remitente: identidad,
+      texto: `🚨 ¡AYUDA URGENTE en ${identidad}! 🚨`,
+      fecha: serverTimestamp()
+    });
+    toast('Alerta enviada al Maestro', 'warn');
+  } catch(e) { toast('Error al enviar alerta', 'err'); }
+};
+
+// ——— SNAPSHOT ARENA ———
+function suscribirArena() {
+  if (unsubArena) unsubArena();
+  unsubArena = onSnapshot(
+    query(collection(db, "seguimiento_activo"), orderBy("inicio", "asc")),
+    (snap) => {
+      setConexion(true);
+      const cont = document.getElementById('gruposActivos');
+
+      if (snap.empty) {
+        cont.innerHTML = `<div class="empty-state"><div class="empty-icon">🏛️</div><p>Esperando grupos...</p></div>`;
+        return;
+      }
+
+      cont.innerHTML = '';
+      snap.forEach(d => {
+        const data = d.data();
+        if (!data.inicio) return;
+        const pruebas = data.pruebas || {};
+        const esMiRama = data.rama === miRama;
+        const p1done = pruebas[`${identidad}_P1`] || false;
+        const p2done = pruebas[`${identidad}_P2`] || false;
+
+        const card = document.createElement('div');
+        card.className = `grupo-card ${esMiRama ? 'mi-rama' : 'otra-rama'}`;
+
+        if (esMiRama) {
+          // Card completa con botones de acción
+          card.innerHTML = `
+            <div class="card-stripe ${data.rama}"></div>
+            <div class="card-body">
+              <div class="grupo-top">
+                <div>
+                  <div class="grupo-nombre">${data.nombre}</div>
+                  <div class="grupo-rama ${data.rama}" style="display:inline-block; margin-top:4px;">${data.rama}</div>
+                </div>
+                <span class="mi-rama-tag">🎯 Tu rama</span>
+              </div>
+              <div class="prueba-btns">
+                <button class="btn-prueba ${p1done ? 'done' : 'pendiente'}" onclick="togglePrueba('${d.id}', 'P1', ${p1done})">
+                  <span class="check-icon">${p1done ? '✅' : '○'}</span>
+                  Prueba 1
+                </button>
+                <button class="btn-prueba ${p2done ? 'done' : 'pendiente'}" onclick="togglePrueba('${d.id}', 'P2', ${p2done})">
+                  <span class="check-icon">${p2done ? '✅' : '○'}</span>
+                  Prueba 2
+                </button>
+              </div>
+            </div>`;
+        } else {
+          // Card reducida — solo info
+          const todosP1 = pruebas;
+          let dotsHtml = '';
+          // Mostrar dots de las pruebas de este campamento con su campamento de origen
+          Object.entries(pruebas).filter(([k]) => k.endsWith('_P1') || k.endsWith('_P2')).forEach(([k, v]) => {
+            dotsHtml += `<div class="lock-dot ${v ? 'done' : ''}"></div>`;
+          });
+
+          card.innerHTML = `
+            <div class="card-stripe ${data.rama}"></div>
+            <div class="card-body">
+              <div class="grupo-top" style="margin-bottom:0">
+                <div>
+                  <div class="grupo-nombre" style="font-size:0.9rem">${data.nombre}</div>
+                </div>
+                <span class="grupo-rama ${data.rama}">${data.rama}</span>
+              </div>
+            </div>`;
+        }
+
+        cont.appendChild(card);
+      });
+    },
+    (error) => {
+      console.error('Arena snapshot error:', error);
+      setConexion(false);
+    }
+  );
+}
+
+// ——— SNAPSHOT CHAT ———
+function suscribirChat() {
+  if (unsubChat) unsubChat();
+  unsubChat = onSnapshot(
+    query(collection(db, "mensajes"), orderBy("fecha", "asc"), limitToLast(30)),
+    (snap) => {
+      setConexion(true);
+      const chat = document.getElementById('chatBox');
+      chat.innerHTML = '';
+
+      snap.forEach(d => {
+        const m = d.data();
+        let clase = 'otro';
+        if (m.remitente === identidad) clase = 'yo';
+        else if (m.remitente === 'PRINCIPAL') clase = 'principal';
+        else if (m.remitente === 'SISTEMA') clase = 'sistema';
+
+        chat.innerHTML += `
+          <div class="msg ${clase}">
+            <div class="msg-rem">${m.remitente}</div>
+            <div class="msg-txt">${m.texto}</div>
+          </div>`;
+      });
+
+      chat.scrollTop = chat.scrollHeight;
+
+      // Notificación si no estamos en el chat y hay mensajes nuevos
+      if (!enChatPanel && snap.size > ultimoMsgCount && ultimoMsgCount > 0) {
+        chatNoLeidos++;
+        document.getElementById('chat-badge').classList.add('visible');
+        toast('Nuevo mensaje en el chat', 'warn');
+      }
+      ultimoMsgCount = snap.size;
+    },
+    (error) => {
+      console.error('Chat snapshot error:', error);
+      setConexion(false);
+    }
+  );
+}
+
+// ——— AUTO-LOGIN si ya hay identidad guardada ———
+if (identidad) {
+  iniciarApp();
+}
+</script>
+</body>
+</html>

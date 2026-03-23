@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AETERNUS Arde Lucus — Panel Maestro</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --gold-dim: #7A6030;
+  --red: #8B1A1A;
+  --red-bright: #C0392B;
+  --green: #1A5C2A;
+  --green-bright: #27AE60;
+  --blue: #1A3A5C;
+  --blue-bright: #2980B9;
+  --bg: #0A0805;
+  --bg2: #111009;
+  --bg3: #1A1710;
+  --bg4: #242018;
+  --border: rgba(201,168,76,0.2);
+  --border-strong: rgba(201,168,76,0.5);
+  --text: #E8DCC8;
+  --text-dim: #8A7D66;
+  --text-muted: #554E3E;
+  --romano: #8B2020;
+  --castrexo: #1A4A2A;
+  --shadow: 0 4px 24px rgba(0,0,0,0.6);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Crimson Text', Georgia, serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Fondo texturizado */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(139,26,26,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(26,74,42,0.08) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9A84C' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ——— LAYOUT ——— */
+.app { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ——— HEADER ——— */
+.header {
+  background: linear-gradient(180deg, rgba(10,8,5,0.98) 0%, rgba(15,12,7,0.95) 100%);
+  border-bottom: 1px solid var(--border-strong);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.8);
+}
+
+.header-logo {
+  font-family: 'Cinzel', serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(201,168,76,0.4);
+  white-space: nowrap;
+}
+.header-logo span { font-size: 0.7rem; display: block; letter-spacing: 6px; color: var(--text-dim); font-weight: 400; margin-top: -2px; }
+
+.header-divider { width: 1px; height: 40px; background: var(--border); flex-shrink: 0; }
+
+.nuevo-grupo-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex: 1;
+}
+
+.input-field {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem;
+  padding: 8px 14px;
+  transition: border-color 0.2s, background 0.2s;
+  outline: none;
+}
+.input-field:focus { border-color: var(--gold-dim); background: rgba(201,168,76,0.05); }
+.input-field::placeholder { color: var(--text-muted); }
+#nuevoGrupo { width: 180px; }
+
+.select-rama {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  padding: 8px 12px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.select-rama:focus { border-color: var(--gold-dim); }
+.select-rama option { background: #1A1710; }
+
+.select-hora {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  padding: 8px 12px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  min-width: 150px;
+}
+.select-hora:focus { border-color: var(--gold-dim); background: rgba(201,168,76,0.05); }
+.select-hora option { background: #1A1710; }
+.select-hora option.tiene-reserva { color: var(--gold); }
+.select-hora option.libre { color: var(--text-muted); }
+
+.btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+  color: #1A1200;
+  box-shadow: 0 2px 12px rgba(201,168,76,0.3);
+}
+.btn-gold:hover { box-shadow: 0 4px 20px rgba(201,168,76,0.5); transform: translateY(-1px); }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+}
+.btn-ghost:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+.header-actions { display: flex; gap: 8px; margin-left: auto; }
+
+/* ——— NAV TABS ——— */
+.nav-tabs {
+  display: flex;
+  gap: 0;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+}
+.tab {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  font-weight: 600;
+  padding: 14px 24px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  text-transform: uppercase;
+}
+.tab .tab-icon { font-size: 0.9rem; }
+.tab:hover { color: var(--text-dim); }
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.tab .badge {
+  background: var(--gold);
+  color: #1A1200;
+  border-radius: 10px;
+  font-size: 0.55rem;
+  padding: 1px 6px;
+  font-weight: 700;
+}
+
+/* ——— MAIN CONTENT ——— */
+.main { flex: 1; padding: 24px; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ——— ARENA ACTIVA ——— */
+.arena-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.grupo-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+.grupo-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow); }
+
+.grupo-card.tiempo-warn { border-color: rgba(201,168,76,0.4); }
+.grupo-card.tiempo-warn .crono { color: var(--gold) !important; }
+.grupo-card.tiempo-alert { border-color: rgba(192,57,43,0.5); }
+.grupo-card.tiempo-alert .crono { color: #E74C3C !important; }
+
+.card-stripe {
+  height: 4px;
+  width: 100%;
+}
+.card-stripe.ROMANO { background: linear-gradient(90deg, var(--romano), #C0392B); }
+.card-stripe.CASTREXO { background: linear-gradient(90deg, var(--castrexo), #27AE60); }
+
+.card-header {
+  padding: 14px 16px 10px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.grupo-nombre {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.5px;
+}
+.rama-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.rama-badge.ROMANO { background: rgba(139,26,26,0.3); color: #E07070; border: 1px solid rgba(139,26,26,0.5); }
+.rama-badge.CASTREXO { background: rgba(26,90,42,0.3); color: #70C090; border: 1px solid rgba(26,90,42,0.5); }
+
+.crono-wrap { padding: 6px 16px; text-align: center; }
+.crono {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #4A9FD4;
+  letter-spacing: 2px;
+  text-shadow: 0 0 16px rgba(74,159,212,0.4);
+  transition: color 0.5s;
+}
+
+/* Pruebas grid */
+.pruebas-section { padding: 8px 16px; }
+.pruebas-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.pruebas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+
+.prueba-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 8px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.06);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  transition: all 0.15s;
+}
+.prueba-item.mi-rama {
+  border-color: rgba(201,168,76,0.2);
+  color: var(--text-dim);
+  background: rgba(201,168,76,0.04);
+}
+.prueba-item.otra-rama { opacity: 0.3; }
+
+.prueba-dots { display: flex; gap: 4px; }
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--bg4);
+  border: 1px solid #333;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.dot.done { background: var(--green-bright); border-color: var(--green-bright); box-shadow: 0 0 6px rgba(39,174,96,0.6); }
+.dot.mi-rama-dot { cursor: pointer; }
+.dot.mi-rama-dot:hover { border-color: var(--gold-dim); transform: scale(1.2); }
+
+/* Prueba final */
+.card-footer { padding: 8px 16px 14px; display: flex; flex-direction: column; gap: 6px; }
+
+.btn-final {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-transform: uppercase;
+}
+.final-off {
+  background: rgba(255,255,255,0.03);
+  color: var(--text-muted);
+  border: 1px dashed var(--gold-dim);
+}
+.final-off:hover { background: rgba(201,168,76,0.08); color: var(--gold-dim); }
+.final-done {
+  background: linear-gradient(135deg, #8B6914, var(--gold), #8B6914);
+  color: #1A1200;
+  box-shadow: 0 0 16px rgba(201,168,76,0.4);
+}
+
+.nota-field {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-style: italic;
+  font-family: 'Crimson Text', serif;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.03);
+  border-left: 2px solid var(--gold-dim);
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  transition: background 0.2s;
+  min-height: 30px;
+}
+.nota-field:hover { background: rgba(201,168,76,0.06); }
+.nota-field.vacia { color: var(--text-muted); }
+
+.btn-terminar {
+  width: 100%;
+  padding: 10px;
+  background: rgba(139,26,26,0.15);
+  border: 1px solid rgba(139,26,26,0.3);
+  color: #D07070;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.btn-terminar:hover { background: rgba(192,57,43,0.25); border-color: rgba(192,57,43,0.5); color: #E07070; }
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-muted);
+  grid-column: 1 / -1;
+}
+.empty-state .empty-icon { font-size: 3rem; opacity: 0.3; margin-bottom: 16px; }
+.empty-state p { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 2px; }
+
+/* ——— RANKING ——— */
+.ranking-list { display: flex; flex-direction: column; gap: 8px; max-width: 800px; }
+
+.ranking-item {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: border-color 0.2s;
+}
+.ranking-item:hover { border-color: var(--border-strong); }
+
+.rank-num {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--text-muted);
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.rank-num.gold { color: var(--gold); text-shadow: 0 0 10px rgba(201,168,76,0.5); }
+.rank-num.silver { color: #AAAAAA; }
+.rank-num.bronze { color: #CD7F32; }
+
+.rank-info { flex: 1; min-width: 0; }
+.rank-nombre {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.rank-meta { display: flex; gap: 10px; align-items: center; margin-top: 2px; flex-wrap: wrap; }
+.rank-time {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.9rem;
+  color: var(--gold);
+}
+.rank-nota { font-size: 0.8rem; color: var(--text-muted); font-style: italic; }
+
+.rank-pruebas { display: flex; gap: 3px; }
+.rank-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--bg4); border: 1px solid #333; }
+.rank-dot.done { background: var(--green-bright); border-color: var(--green-bright); }
+.rank-dot.final { background: var(--gold); border-color: var(--gold); }
+
+.btn-undo {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.btn-undo:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+.nota-edit-rank {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-style: italic;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: background 0.15s;
+}
+.nota-edit-rank:hover { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+
+/* ——— CHAT ——— */
+.chat-wrap { max-width: 700px; }
+.chat-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px 10px 0 0;
+  height: 420px;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scroll-behavior: smooth;
+}
+.chat-box::-webkit-scrollbar { width: 4px; }
+.chat-box::-webkit-scrollbar-track { background: transparent; }
+.chat-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+}
+.msg.principal { align-self: flex-end; align-items: flex-end; }
+.msg.otro { align-self: flex-start; align-items: flex-start; }
+
+.msg-remitente {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  margin-bottom: 3px;
+}
+.msg.principal .msg-remitente { color: var(--gold-dim); }
+.msg.otro .msg-remitente { color: var(--blue-bright); }
+
+.msg-texto {
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.msg.principal .msg-texto {
+  background: rgba(201,168,76,0.12);
+  border: 1px solid rgba(201,168,76,0.2);
+  color: var(--text);
+  border-radius: 10px 10px 2px 10px;
+}
+.msg.otro .msg-texto {
+  background: rgba(41,128,185,0.12);
+  border: 1px solid rgba(41,128,185,0.2);
+  color: var(--text);
+  border-radius: 10px 10px 10px 2px;
+}
+
+.chat-input-wrap {
+  display: flex;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+}
+.chat-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem;
+  padding: 14px 18px;
+  outline: none;
+}
+.chat-input::placeholder { color: var(--text-muted); }
+.btn-send {
+  background: var(--gold);
+  border: none;
+  color: #1A1200;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  padding: 0 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-send:hover { background: var(--gold-light); }
+
+.chat-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+
+/* ——— TOASTS ——— */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 0.85rem;
+  color: var(--text);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  animation: slideIn 0.3s ease;
+  max-width: 300px;
+}
+.toast.ok { border-color: rgba(39,174,96,0.4); }
+.toast.err { border-color: rgba(192,57,43,0.4); color: #E07070; }
+@keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+
+/* ——— MODAL ——— */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg3);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 28px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+}
+.modal h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 3px;
+  color: var(--gold);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+.modal p { color: var(--text-dim); margin-bottom: 20px; font-size: 0.95rem; line-height: 1.5; }
+.modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ——— SCROLLBARS ——— */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ——— STATS BAR ——— */
+.stats-bar {
+  display: flex;
+  gap: 24px;
+  padding: 10px 24px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+.stat-item { display: flex; align-items: center; gap: 8px; }
+.stat-label { font-family: 'Cinzel', serif; font-size: 0.55rem; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; }
+.stat-val { font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 700; color: var(--gold); }
+.stat-sep { width: 1px; height: 20px; background: var(--border); }
+
+/* ——— CONFIRMACIÓN VISUAL EN CARD ——— */
+.btn-terminar.confirmando {
+  background: rgba(192,57,43,0.3);
+  border-color: rgba(192,57,43,0.6);
+  color: #E07070;
+  animation: pulse 0.6s ease infinite alternate;
+}
+@keyframes pulse { from { box-shadow: none; } to { box-shadow: 0 0 12px rgba(192,57,43,0.5); } }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header { flex-wrap: wrap; gap: 10px; }
+  #nuevoGrupo { width: 130px; }
+  .nuevo-grupo-form { flex-wrap: wrap; }
+  .stats-bar { flex-wrap: wrap; gap: 12px; }
+  .arena-grid { grid-template-columns: 1fr; }
+  .tab { padding: 12px 14px; font-size: 0.6rem; }
+}
+
+/* ——— INDICADOR CONEXIÓN ——— */
+.conn-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  letter-spacing: 2px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  transition: all 0.4s ease;
+  white-space: nowrap;
+}
+.conn-indicator.online {
+  background: rgba(39,174,96,0.1);
+  border-color: rgba(39,174,96,0.3);
+  color: #70C090;
+}
+.conn-indicator.offline {
+  background: rgba(192,57,43,0.15);
+  border-color: rgba(192,57,43,0.4);
+  color: #E07070;
+}
+.conn-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.4s;
+}
+.conn-indicator.online .conn-dot {
+  background: #27AE60;
+  box-shadow: 0 0 6px rgba(39,174,96,0.7);
+  animation: connPulse 2s ease-in-out infinite;
+}
+.conn-indicator.offline .conn-dot {
+  background: #C0392B;
+  box-shadow: 0 0 6px rgba(192,57,43,0.7);
+}
+@keyframes connPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Banner de desconexión */
+.offline-banner {
+  display: none;
+  background: rgba(139,26,26,0.25);
+  border-bottom: 1px solid rgba(192,57,43,0.4);
+  padding: 8px 24px;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: #E07070;
+  position: sticky;
+  top: 73px;
+  z-index: 99;
+}
+.offline-banner.visible { display: block; }
+
+/* Mensajes de sistema en chat */
+.msg.sistema { justify-content: center; }
+.msg-sistema {
+  text-align: center;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--text-muted);
+  border: 1px dashed rgba(255,255,255,0.1);
+  border-radius: 6px;
+  padding: 5px 14px;
+  background: transparent;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-logo">
+      🏛 AETERNUS ARDE LUCUS
+      <span>25 AÑOS · UNA CIUDAD · UN DESTINO</span>
+    </div>
+    <div class="header-divider"></div>
+    <form class="nuevo-grupo-form" onsubmit="iniciarGrupo(event)">
+      <div style="position:relative; display:flex; align-items:center; gap:8px; flex:1; flex-wrap:wrap;">
+        <select class="select-hora" id="selectFecha" onchange="cambiarFecha(this.value)" style="min-width:170px;">
+          <option value="2026-06-15">📅 Lun 15 Jun</option>
+          <option value="2026-06-16">📅 Mar 16 Jun</option>
+          <option value="2026-06-17">📅 Mié 17 Jun</option>
+        </select>
+        <select class="select-hora" id="selectHora" onchange="autorellenarDesdeReserva()">
+          <option value="">⏰ Hora de inicio...</option>
+        </select>
+        <input class="input-field" type="text" id="nuevoGrupo" placeholder="Nombre del grupo..." autocomplete="off" maxlength="40">
+        <select class="select-rama" id="selectRama">
+          <option value="">Rama...</option>
+          <option value="ROMANO">⚔️ ROMANO</option>
+          <option value="CASTREXO">🌿 CASTREXO</option>
+        </select>
+        <span id="reserva-hint" style="display:none; font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:1px; color:var(--gold-dim); white-space:nowrap; padding:4px 8px; border:1px solid var(--border); border-radius:4px; background:rgba(201,168,76,0.06);">📋 Desde reserva</span>
+      </div>
+      <button type="submit" class="btn btn-gold">⊕ Iniciar</button>
+    </form>
+    <div class="header-actions">
+      <div class="conn-indicator online" id="conn-indicator">
+        <div class="conn-dot"></div>
+        <span id="conn-label">ONLINE</span>
+      </div>
+      <button class="btn btn-ghost" onclick="exportarExcel()">📊 Exportar</button>
+    </div>
+  </header>
+
+  <div class="offline-banner" id="offline-banner">⚠️ Sin conexión — los datos pueden no estar actualizados</div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-label">En arena</span>
+      <span class="stat-val" id="stat-activos">0</span>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat-item">
+      <span class="stat-label">Finalizados</span>
+      <span class="stat-val" id="stat-finalizados">0</span>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat-item">
+      <span class="stat-label">Romano</span>
+      <span class="stat-val" id="stat-romano" style="color:#E07070">0</span>
+    </div>
+    <div class="stat-sep"></div>
+    <div class="stat-item">
+      <span class="stat-label">Castrexo</span>
+      <span class="stat-val" id="stat-castrexo" style="color:#70C090">0</span>
+    </div>
+  </div>
+
+  <!-- NAV TABS -->
+  <nav class="nav-tabs">
+    <button class="tab active" data-panel="arena" onclick="switchTab('arena', this)">
+      <span class="tab-icon">⚔️</span> Arena Activa <span class="badge" id="badge-activos">0</span>
+    </button>
+    <button class="tab" data-panel="ranking" onclick="switchTab('ranking', this)">
+      <span class="tab-icon">🏆</span> Ranking <span class="badge" id="badge-finalizados">0</span>
+    </button>
+    <button class="tab" data-panel="chat" onclick="switchTab('chat', this)">
+      <span class="tab-icon">📜</span> Chat de Mando <span class="badge" id="badge-mensajes" style="display:none">!</span>
+    </button>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- PANEL: ARENA -->
+    <div class="panel active" id="panel-arena">
+      <div class="arena-grid" id="gruposActivos">
+        <div class="empty-state">
+          <div class="empty-icon">🏛️</div>
+          <p>Ningún grupo en arena — inicia una misión arriba</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: RANKING -->
+    <div class="panel" id="panel-ranking">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h2 style="font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:3px; color:var(--gold); text-transform:uppercase;">Historial de Misiones</h2>
+        <button class="btn btn-ghost" style="font-size:0.6rem; color:var(--red-bright); border-color:rgba(139,26,26,0.3);" onclick="pedirBorrarRanking()">🗑 Limpiar historial</button>
+      </div>
+      <div class="ranking-list" id="gruposFinalizados">
+        <div class="empty-state" style="grid-column:unset">
+          <div class="empty-icon">🏆</div>
+          <p>Sin misiones finalizadas aún</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: CHAT -->
+    <div class="panel" id="panel-chat">
+      <div class="chat-wrap">
+        <div class="chat-box" id="chatBox"></div>
+        <div class="chat-input-wrap">
+          <input class="chat-input" id="msgChat" placeholder="Escribe una orden..." autocomplete="off" onkeydown="if(event.key==='Enter') enviarMensaje()">
+          <button class="btn-send" onclick="enviarMensaje()">ENVIAR</button>
+        </div>
+        <div class="chat-actions">
+          <button class="btn btn-ghost" style="font-size:0.6rem; color:var(--red-bright); margin-top:8px;" onclick="pedirBorrarChat()">🗑 Vaciar chat</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL CONFIRMACIÓN -->
+<div class="modal-overlay" id="modal-overlay" onclick="cerrarModal(event)">
+  <div class="modal" id="modal">
+    <h2 id="modal-titulo">Confirmar acción</h2>
+    <p id="modal-msg">¿Estás seguro?</p>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-gold" id="modal-confirm-btn" onclick="">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy,
+         deleteDoc, doc, serverTimestamp, getDocs, setDoc, limitToLast, updateDoc
+       } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDmpGzOSToV8mFRkxSxLKL6Isoi_7lEU2E",
+  authDomain: "escape-room-arde-lucus.firebaseapp.com",
+  projectId: "escape-room-arde-lucus",
+  storageBucket: "escape-room-arde-lucus.firebasestorage.app",
+  messagingSenderId: "264728827438",
+  appId: "1:264728827438:web:a764eebccf4dcfc73771bf"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ——— ESTADO DE CONEXIÓN ———
+let estaConectado = true;
+
+function setConexion(online) {
+  if (online === estaConectado) return;
+  estaConectado = online;
+
+  const ind = document.getElementById('conn-indicator');
+  const lbl = document.getElementById('conn-label');
+  const banner = document.getElementById('offline-banner');
+
+  if (online) {
+    ind.className = 'conn-indicator online';
+    lbl.textContent = 'ONLINE';
+    banner.classList.remove('visible');
+    toast('✓ Conexión restaurada', 'ok');
+    // Aviso en el chat
+    addDoc(collection(db, "mensajes"), {
+      remitente: 'SISTEMA',
+      texto: '🟢 Panel Maestro ha recuperado la conexión',
+      fecha: serverTimestamp()
+    }).catch(() => {});
+  } else {
+    ind.className = 'conn-indicator offline';
+    lbl.textContent = 'OFFLINE';
+    banner.classList.add('visible');
+    toast('⚠️ Conexión con Firestore perdida', 'err');
+  }
+}
+
+window.addEventListener('online',  () => setConexion(true));
+window.addEventListener('offline', () => setConexion(false));
+
+const ramas = {
+  'ROMANO':   ['Cohors III', 'Caetra', 'Pretoriana'],
+  'CASTREXO': ['Lugdunum', 'Treba Lucis', 'Terra Copora']
+};
+const todasLasPruebas = [...ramas.ROMANO, ...ramas.CASTREXO];
+
+// FIX: Registro de intervalos para no acumularlos
+const timers = {};
+
+// Memoria de datos para evitar pasar JSON por atributos HTML
+const datosVivos = {};
+const datosHistorial = {};
+
+// ——— INTEGRACIÓN CON RESERVAS ———
+// Genera horarios igual que el gestor
+function getHorariosCompletos() {
+  const h = [];
+  for(let i=10; i<=13; i++) {
+    for(let m=0; m<60; m+=15) {
+      if(i===13 && m>0) break;
+      h.push(`${i.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`);
+    }
+  }
+  const tardes = ["16:30","16:45","17:00","17:15","17:30","17:45","18:00","18:15","18:30"];
+  return [...h, ...tardes];
+}
+
+// Mapa de reservas en memoria: key = "YYYY-MM-DD|HH:MM", val = {name, rama}
+const reservasMap = {};
+
+// Fecha seleccionada en el selector (o hoy si no existe el selector)
+function fechaSeleccionada() {
+  const sel = document.getElementById('selectFecha');
+  if (sel && sel.value) return sel.value;
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// Traducir rama del gestor ("Romana"/"Castrexa") a rama del maestro ("ROMANO"/"CASTREXO")
+function traducirRama(ramaGestor) {
+  if (!ramaGestor) return '';
+  const r = ramaGestor.toLowerCase();
+  if (r === 'romana' || r === 'romano') return 'ROMANO';
+  if (r === 'castrexa' || r === 'castrexo') return 'CASTREXO';
+  return '';
+}
+
+// Escuchar reservas en tiempo real y poblar el selector de horas
+onSnapshot(collection(db, "reservas"), (snap) => {
+  // Limpiar mapa
+  Object.keys(reservasMap).forEach(k => delete reservasMap[k]);
+
+  snap.forEach(d => {
+    const r = d.data();
+    if (r.date && r.time) {
+      reservasMap[`${r.date}|${r.time}`] = { name: r.name, rama: r.rama };
+    }
+  });
+
+  poblarSelectHoras();
+});
+
+window.cambiarFecha = (fecha) => {
+  // Limpiar campos y selector de hora al cambiar día
+  document.getElementById('selectHora').value = '';
+  document.getElementById('nuevoGrupo').value = '';
+  document.getElementById('selectRama').value = '';
+  document.getElementById('reserva-hint').style.display = 'none';
+  // Repoblar horas con la nueva fecha (pasada directamente, sin leer el DOM)
+  poblarSelectHoras(fecha);
+};
+
+function poblarSelectHoras(fechaForzada) {
+  const sel = document.getElementById('selectHora');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">⏰ Hora de inicio...</option>';
+
+  const horarios = getHorariosCompletos();
+  const fecha = fechaForzada || fechaSeleccionada();
+
+  horarios.forEach(hora => {
+    const clave = `${fecha}|${hora}`;
+    const reserva = reservasMap[clave];
+    const opt = document.createElement('option');
+    opt.value = hora;
+    if (reserva) {
+      opt.textContent = `${hora}h — 📋 ${reserva.name} (${reserva.rama || '?'})`;
+      opt.className = 'tiene-reserva';
+      opt.style.color = '#C9A84C';
+      opt.style.fontWeight = '700';
+    } else {
+      opt.textContent = `${hora}h`;
+      opt.className = 'libre';
+    }
+    sel.appendChild(opt);
+  });
+}
+
+window.autorellenarDesdeReserva = () => {
+  const hora = document.getElementById('selectHora').value;
+  const hoy = fechaSeleccionada();
+  const clave = `${hoy}|${hora}`;
+  const reserva = reservasMap[clave];
+  const hint = document.getElementById('reserva-hint');
+
+  if (reserva) {
+    document.getElementById('nuevoGrupo').value = reserva.name;
+    const ramaTraducida = traducirRama(reserva.rama);
+    if (ramaTraducida) document.getElementById('selectRama').value = ramaTraducida;
+    hint.style.display = 'inline';
+    toast(`📋 Datos cargados desde reserva: ${reserva.name}`, 'ok');
+  } else {
+    // Si no hay reserva, solo limpiar el hint
+    hint.style.display = 'none';
+  }
+};
+
+// ——— TOAST ———
+function toast(msg, tipo = 'ok') {
+  const t = document.createElement('div');
+  t.className = `toast ${tipo}`;
+  t.textContent = msg;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ——— MODAL ———
+window.cerrarModal = (e) => {
+  if (e && e.target !== document.getElementById('modal-overlay')) return;
+  document.getElementById('modal-overlay').classList.remove('open');
+};
+function abrirModal(titulo, msg, onConfirm) {
+  document.getElementById('modal-titulo').textContent = titulo;
+  document.getElementById('modal-msg').textContent = msg;
+  const btn = document.getElementById('modal-confirm-btn');
+  btn.onclick = () => { document.getElementById('modal-overlay').classList.remove('open'); onConfirm(); };
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+// ——— TABS ———
+window.switchTab = (panel, el) => {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + panel).classList.add('active');
+  if (panel === 'chat') document.getElementById('badge-mensajes').style.display = 'none';
+};
+
+// ——— INICIAR GRUPO ———
+window.iniciarGrupo = async (e) => {
+  e.preventDefault();
+  const nombre = document.getElementById('nuevoGrupo').value.trim();
+  const rama = document.getElementById('selectRama').value;
+  if (!nombre || !rama) return toast('Nombre y Rama obligatorios', 'err');
+  try {
+    await addDoc(collection(db, "seguimiento_activo"), {
+      nombre, rama, inicio: serverTimestamp(), pruebas: {}, prueba_final: false, nota: ""
+    });
+    document.getElementById('nuevoGrupo').value = "";
+    document.getElementById('selectRama').value = "";
+    document.getElementById('selectHora').value = "";
+    document.getElementById('reserva-hint').style.display = 'none';
+    toast(`${nombre} ha entrado en la arena`);
+    // Cambiar a pestaña arena
+    switchTab('arena', document.querySelector('[data-panel="arena"]'));
+  } catch(err) {
+    toast('Error al iniciar grupo', 'err');
+  }
+};
+
+// ——— EDITAR NOTA ———
+window.editarNota = async (id, coleccion) => {
+  const notaActual = coleccion === 'seguimiento_activo'
+    ? (datosVivos[id]?.nota || "")
+    : (datosHistorial[id]?.nota || "");
+  const nuevaNota = prompt("Anotación:", notaActual);
+  if (nuevaNota === null) return;
+  try {
+    await updateDoc(doc(db, coleccion, id), { nota: nuevaNota });
+    toast('Nota guardada');
+  } catch(e) { toast('Error al guardar nota', 'err'); }
+};
+
+// ——— MARCAR PRUEBA ———
+window.marcarPrueba = async (id, campamento, slot) => {
+  const data = datosVivos[id];
+  if (!data) return;
+  const clave = `${campamento}_${slot}`;
+  const nuevas = { ...data.pruebas, [clave]: !data.pruebas?.[clave] };
+  try {
+    await updateDoc(doc(db, "seguimiento_activo", id), { pruebas: nuevas });
+  } catch(e) { toast('Error al actualizar prueba', 'err'); }
+};
+
+// ——— MARCAR PRUEBA FINAL ———
+window.marcarPruebaFinal = async (id) => {
+  const data = datosVivos[id];
+  if (!data) return;
+  try {
+    await updateDoc(doc(db, "seguimiento_activo", id), { prueba_final: !data.prueba_final });
+  } catch(e) { toast('Error', 'err'); }
+};
+
+// ——— FINALIZAR MISIÓN ———
+window.finalizarMision = (id) => {
+  const data = datosVivos[id];
+  if (!data) return;
+  abrirModal(
+    '¿Finalizar misión?',
+    `El cronómetro de "${data.nombre}" se detendrá y pasará al historial.`,
+    async () => {
+      try {
+        const snap = await getDocs(query(collection(db, "seguimiento_activo")));
+        const docRef = snap.docs.find(d => d.id === id);
+        if (!docRef) return;
+        const d = docRef.data();
+        const ahora = new Date();
+        const inicioMs = d.inicio.toDate().getTime();
+        const dif = Math.floor((ahora - inicioMs) / 1000);
+        await addDoc(collection(db, "finalizados"), {
+          nombre: d.nombre, rama: d.rama, inicioJS: inicioMs, fin: ahora,
+          tiempoFinal: `${Math.floor(dif/60)}m ${dif%60}s`,
+          tiempoSeg: dif,
+          pruebas: d.pruebas || {}, prueba_final: d.prueba_final || false, nota: d.nota || ""
+        });
+        await deleteDoc(doc(db, "seguimiento_activo", id));
+        toast(`${d.nombre} ha finalizado la misión`);
+      } catch(e) { toast('Error al finalizar', 'err'); }
+    }
+  );
+};
+
+// ——— RETORNAR A EN VIVO ———
+window.retornarAEnVivo = (id) => {
+  const data = datosHistorial[id];
+  if (!data) return;
+  abrirModal(
+    '¿Devolver a la arena?',
+    `"${data.nombre}" regresará al cronómetro activo.`,
+    async () => {
+      try {
+        await setDoc(doc(db, "seguimiento_activo", id), {
+          nombre: data.nombre, rama: data.rama,
+          inicio: new Date(data.inicioJS),
+          pruebas: data.pruebas || {}, prueba_final: data.prueba_final || false, nota: data.nota || ""
+        });
+        await deleteDoc(doc(db, "finalizados", id));
+        toast(`${data.nombre} de vuelta en la arena`);
+      } catch(e) { toast('Error', 'err'); }
+    }
+  );
+};
+
+// ——— CHAT ———
+window.enviarMensaje = async () => {
+  const texto = document.getElementById('msgChat').value.trim();
+  if (!texto) return;
+  try {
+    await addDoc(collection(db, "mensajes"), { remitente: 'PRINCIPAL', texto, fecha: serverTimestamp() });
+    document.getElementById('msgChat').value = "";
+  } catch(e) { toast('Error al enviar', 'err'); }
+};
+
+window.pedirBorrarChat = () => {
+  abrirModal('¿Vaciar chat?', 'Se eliminarán todos los mensajes del chat.', async () => {
+    const snap = await getDocs(collection(db, "mensajes"));
+    await Promise.all(snap.docs.map(d => deleteDoc(doc(db, "mensajes", d.id))));
+    toast('Chat vaciado');
+  });
+};
+
+window.pedirBorrarRanking = () => {
+  abrirModal('¿Borrar historial completo?', 'Esta acción eliminará permanentemente todos los grupos finalizados.', async () => {
+    const snap = await getDocs(collection(db, "finalizados"));
+    await Promise.all(snap.docs.map(d => deleteDoc(doc(db, "finalizados", d.id))));
+    toast('Historial eliminado');
+  });
+};
+
+// ——— EXPORTAR ———
+window.exportarExcel = async () => {
+  const snap = await getDocs(collection(db, "finalizados"));
+  let csv = "\uFEFFGRUPO;RAMA;TIEMPO;P.FINAL;NOTAS;";
+  todasLasPruebas.forEach(c => { csv += `${c} P1;${c} P2;`; });
+  csv += "\r\n";
+  snap.forEach(d => {
+    const data = d.data();
+    let fila = `${data.nombre};${data.rama};${data.tiempoFinal};${data.prueba_final?'SI':'NO'};${data.nota||''};`;
+    todasLasPruebas.forEach(c => {
+      fila += `${data.pruebas?.[c+'_P1']?'SI':'NO'};${data.pruebas?.[c+'_P2']?'SI':'NO'};`;
+    });
+    csv += fila + "\r\n";
+  });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+  a.download = `aeterna_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('Informe exportado');
+};
+
+// ——— HELPER: clase de tiempo ———
+function claseTiempo(segundos) {
+  if (segundos > 3600) return 'tiempo-alert'; // más de 1h
+  if (segundos > 1800) return 'tiempo-warn';  // más de 30min
+  return '';
+}
+
+// ——— SNAPSHOT: GRUPOS ACTIVOS ———
+onSnapshot(query(collection(db, "seguimiento_activo"), orderBy("inicio", "asc")), (snap) => {
+  setConexion(true);
+  const cont = document.getElementById('gruposActivos');
+
+  // FIX 1: calcular qué IDs ya no existen y eliminar sus cards del DOM
+  const idsActuales = new Set(snap.docs.map(d => d.id));
+  Object.keys(timers).forEach(id => {
+    if (!idsActuales.has(id)) {
+      clearInterval(timers[id]);
+      delete timers[id];
+      // Eliminar la card del DOM directamente
+      const cardVieja = document.getElementById('card-' + id);
+      if (cardVieja) cardVieja.remove();
+    }
+  });
+
+  // Actualizar contadores
+  document.getElementById('stat-activos').textContent = snap.size;
+  document.getElementById('badge-activos').textContent = snap.size;
+  let romano = 0, castrexo = 0;
+
+  if (snap.empty) {
+    cont.innerHTML = `<div class="empty-state"><div class="empty-icon">🏛️</div><p>Ningún grupo en arena — inicia una misión arriba</p></div>`;
+    document.getElementById('stat-romano').textContent = 0;
+    document.getElementById('stat-castrexo').textContent = 0;
+    return;
+  }
+
+  // Limpiar posible empty-state si existía
+  const emptyEl = cont.querySelector('.empty-state');
+  if (emptyEl) emptyEl.remove();
+
+  snap.forEach(d => {
+    const data = d.data();
+    if (!data.inicio) return;
+    if (data.rama === 'ROMANO') romano++; else castrexo++;
+    datosVivos[d.id] = data;
+
+    const inicio = data.inicio.toDate();
+    const esCardNueva = !document.getElementById('card-' + d.id);
+
+    // FIX 2: solo reconstruir el HTML si la card es nueva
+    // Si ya existe, actualizar solo las partes que cambian (pruebas, nota, botón final)
+    // El cronómetro NUNCA se toca desde aquí → no vuelve a cero
+    if (esCardNueva) {
+      const card = document.createElement('div');
+      card.id = 'card-' + d.id;
+      card.className = 'grupo-card';
+      card.innerHTML = construirCardHTML(d.id, data);
+      cont.appendChild(card);
+
+      // Crear timer solo para cards nuevas
+      timers[d.id] = setInterval(() => {
+        const el = document.getElementById('crono-' + d.id);
+        if (!el) { clearInterval(timers[d.id]); return; }
+        const s = Math.floor((new Date() - inicio) / 1000);
+        el.textContent = `${Math.floor(s/60)}m ${s%60}s`;
+        const c = document.getElementById('card-' + d.id);
+        if (c) c.className = 'grupo-card ' + claseTiempo(s);
+      }, 1000);
+
+    } else {
+      // Card ya existe: actualizar solo los elementos dinámicos sin tocar el cronómetro
+      const card = document.getElementById('card-' + d.id);
+
+      // Actualizar grid de pruebas
+      const grid = card.querySelector('.pruebas-grid');
+      if (grid) grid.innerHTML = construirPruebasHTML(d.id, data);
+
+      // Actualizar botón prueba final
+      const btnFinal = card.querySelector('.btn-final');
+      if (btnFinal) {
+        btnFinal.className = `btn-final ${data.prueba_final ? 'final-done' : 'final-off'}`;
+        btnFinal.textContent = data.prueba_final ? '🏛️ Prueba final ✓' : '⚔️ Prueba final';
+      }
+
+      // Actualizar nota
+      const notaEl = card.querySelector('.nota-field');
+      if (notaEl) {
+        notaEl.className = `nota-field ${data.nota ? '' : 'vacia'}`;
+        notaEl.textContent = data.nota ? '📝 ' + data.nota : '📝 Añadir anotación...';
+      }
+    }
+  });
+
+  document.getElementById('stat-romano').textContent = romano;
+  document.getElementById('stat-castrexo').textContent = castrexo;
+}, (error) => {
+  console.error('Arena snapshot error:', error);
+  setConexion(false);
+});
+
+function construirPruebasHTML(id, data) {
+  let html = '';
+  todasLasPruebas.forEach(c => {
+    const esMia = ramas[data.rama].includes(c);
+    const p1done = data.pruebas?.[c+'_P1'];
+    const p2done = data.pruebas?.[c+'_P2'];
+    const onclick1 = esMia ? `onclick="marcarPrueba('${id}', '${c}', 'P1')" style="cursor:pointer"` : '';
+    const onclick2 = esMia ? `onclick="marcarPrueba('${id}', '${c}', 'P2')" style="cursor:pointer"` : '';
+    html += `
+      <div class="prueba-item ${esMia ? 'mi-rama' : 'otra-rama'}">
+        <span>${c}</span>
+        <div class="prueba-dots">
+          <div class="dot ${p1done?'done':''} ${esMia?'mi-rama-dot':''}" title="P1" ${onclick1}></div>
+          <div class="dot ${p2done?'done':''} ${esMia?'mi-rama-dot':''}" title="P2" ${onclick2}></div>
+        </div>
+      </div>`;
+  });
+  return html;
+}
+
+function construirCardHTML(id, data) {
+  return `
+    <div class="card-stripe ${data.rama}"></div>
+    <div class="card-header">
+      <span class="grupo-nombre">${data.nombre}</span>
+      <span class="rama-badge ${data.rama}">${data.rama}</span>
+    </div>
+    <div class="crono-wrap">
+      <div class="crono" id="crono-${id}">0m 0s</div>
+    </div>
+    <div class="pruebas-section">
+      <div class="pruebas-label">Campamentos</div>
+      <div class="pruebas-grid">${construirPruebasHTML(id, data)}</div>
+    </div>
+    <div class="card-footer">
+      <button class="btn-final ${data.prueba_final ? 'final-done' : 'final-off'}" onclick="marcarPruebaFinal('${id}')">
+        ${data.prueba_final ? '🏛️ Prueba final ✓' : '⚔️ Prueba final'}
+      </button>
+      <div class="nota-field ${data.nota ? '' : 'vacia'}" onclick="editarNota('${id}', 'seguimiento_activo')">
+        ${data.nota ? '📝 ' + data.nota : '📝 Añadir anotación...'}
+      </div>
+      <button class="btn-terminar" onclick="finalizarMision('${id}')">
+        Terminar misión
+      </button>
+    </div>`;
+}
+
+// ——— SNAPSHOT: FINALIZADOS ———
+onSnapshot(query(collection(db, "finalizados"), orderBy("tiempoSeg", "asc")), (snap) => {
+  setConexion(true);
+  const cont = document.getElementById('gruposFinalizados');
+  document.getElementById('stat-finalizados').textContent = snap.size;
+  document.getElementById('badge-finalizados').textContent = snap.size;
+
+  if (snap.empty) {
+    cont.innerHTML = `<div class="empty-state" style="grid-column:unset"><div class="empty-icon">🏆</div><p>Sin misiones finalizadas aún</p></div>`;
+    return;
+  }
+
+  cont.innerHTML = '';
+  let posicion = 1;
+  snap.forEach(d => {
+    const data = d.data();
+    datosHistorial[d.id] = data;
+
+    let rankClass = '';
+    if (posicion === 1) rankClass = 'gold';
+    else if (posicion === 2) rankClass = 'silver';
+    else if (posicion === 3) rankClass = 'bronze';
+
+    // Dots de pruebas
+    let dots = '';
+    todasLasPruebas.forEach(c => {
+      dots += `<div class="rank-dot ${data.pruebas?.[c+'_P1']?'done':''}" title="${c} P1"></div>`;
+      dots += `<div class="rank-dot ${data.pruebas?.[c+'_P2']?'done':''}" title="${c} P2"></div>`;
+    });
+    if (data.prueba_final) dots += `<div class="rank-dot final" title="Prueba final"></div>`;
+
+    const notaHtml = data.nota
+      ? `<span class="nota-edit-rank" onclick="editarNota('${d.id}', 'finalizados')" title="Editar nota">📝 ${data.nota}</span>`
+      : `<span class="nota-edit-rank" onclick="editarNota('${d.id}', 'finalizados')" title="Añadir nota" style="opacity:0.5">📝 Nota...</span>`;
+
+    cont.innerHTML += `
+      <div class="ranking-item">
+        <div class="rank-num ${rankClass}">${posicion}</div>
+        <div class="rank-info">
+          <div class="rank-nombre">${data.nombre} <span class="rama-badge ${data.rama}" style="font-size:0.5rem; padding:2px 6px;">${data.rama}</span></div>
+          <div class="rank-meta">
+            <span class="rank-time">⏱ ${data.tiempoFinal}</span>
+            ${notaHtml}
+          </div>
+          <div class="rank-pruebas" style="margin-top:6px;">${dots}</div>
+        </div>
+        <button class="btn-undo" onclick="retornarAEnVivo('${d.id}')" title="Devolver a la arena">↩️</button>
+      </div>`;
+    posicion++;
+  });
+}, (error) => {
+  console.error('Finalizados snapshot error:', error);
+  setConexion(false);
+});
+
+// ——— SNAPSHOT: CHAT ———
+onSnapshot(query(collection(db, "mensajes"), orderBy("fecha", "asc"), limitToLast(30)), (snap) => {
+  setConexion(true);
+  const chat = document.getElementById('chatBox');
+  chat.innerHTML = '';
+  snap.forEach(d => {
+    const m = d.data();
+    const esPrincipal = m.remitente === 'PRINCIPAL';
+    const esSistema = m.remitente === 'SISTEMA';
+    if (esSistema) {
+      chat.innerHTML += `
+        <div class="msg sistema">
+          <div class="msg-sistema">${m.texto}</div>
+        </div>`;
+    } else {
+      chat.innerHTML += `
+        <div class="msg ${esPrincipal ? 'principal' : 'otro'}">
+          <div class="msg-remitente">${m.remitente}</div>
+          <div class="msg-texto">${m.texto}</div>
+        </div>`;
+    }
+  });
+  chat.scrollTop = chat.scrollHeight;
+
+  // Notificar si no estamos en el chat
+  const chatPanel = document.getElementById('panel-chat');
+  if (!chatPanel.classList.contains('active') && snap.size > 0) {
+    document.getElementById('badge-mensajes').style.display = 'inline';
+  }
+}, (error) => {
+  console.error('Chat snapshot error:', error);
+  setConexion(false);
+});
+</script>
+</body>
+</html>

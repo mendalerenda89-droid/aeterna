@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AETERNUS — Arde Lucus · 25 Años, Una Ciudad, Un Destino</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --gold-dim: #7A6030;
+  --gold-pale: #F0DFA0;
+  --ember: #C0392B;
+  --ember-bright: #E74C3C;
+  --verde: #1A5C2A;
+  --verde-bright: #27AE60;
+  --bg: #060504;
+  --bg2: #0D0B08;
+  --bg3: #181510;
+  --stone: #2A2520;
+  --text: #E8DCC8;
+  --text-dim: #A09070;
+  --text-muted: #554E3E;
+  --romano: #8B2020;
+  --castrexo: #1A4A2A;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Crimson Text', Georgia, serif;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ————————————————————————————
+   PARTÍCULAS / ASCUAS
+———————————————————————————— */
+#particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #E8C96A 0%, #C9A84C 40%, transparent 70%);
+  animation: rise linear infinite;
+  opacity: 0;
+}
+@keyframes rise {
+  0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  10%  { opacity: 0.8; }
+  90%  { opacity: 0.3; }
+  100% { transform: translateY(-100vh) translateX(var(--drift)) scale(0.2); opacity: 0; }
+}
+
+/* ————————————————————————————
+   HERO
+———————————————————————————— */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Fondo con gradientes dramáticos */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(139,32,32,0.3) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(201,168,76,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 80% at 80% 20%, rgba(26,74,42,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Textura de piedra */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Líneas decorativas del horizonte */
+.hero-lines {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent);
+}
+
+.hero-ornament {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 8px;
+  color: var(--gold-dim);
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.3s forwards;
+}
+
+.hero-xxv {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(2.8rem, 10vw, 8rem);
+  font-weight: 900;
+  line-height: 0.85;
+  color: transparent;
+  background: linear-gradient(180deg,
+    var(--gold-pale) 0%,
+    var(--gold-light) 20%,
+    var(--gold) 50%,
+    var(--gold-dim) 80%,
+    #4A3010 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  letter-spacing: -2px;
+  text-shadow: none;
+  filter: drop-shadow(0 0 60px rgba(201,168,76,0.3));
+  opacity: 0;
+  animation: scaleIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
+  position: relative;
+}
+
+.hero-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.4rem, 5vw, 3.2rem);
+  font-weight: 400;
+  letter-spacing: 12px;
+  color: var(--text);
+  text-transform: uppercase;
+  margin-top: 8px;
+  opacity: 0;
+  animation: fadeUp 1s ease 1.1s forwards;
+}
+
+.hero-subtitle {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(0.55rem, 1.5vw, 0.75rem);
+  letter-spacing: 5px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-top: 16px;
+  opacity: 0;
+  animation: fadeUp 1s ease 1.4s forwards;
+}
+
+.hero-divider {
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 28px auto;
+  opacity: 0;
+  animation: fadeIn 1s ease 1.7s forwards;
+}
+
+.hero-tagline {
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-style: italic;
+  color: var(--text-dim);
+  max-width: 600px;
+  line-height: 1.6;
+  opacity: 0;
+  animation: fadeUp 1s ease 2s forwards;
+}
+
+.hero-ramas {
+  display: flex;
+  gap: 16px;
+  margin-top: 40px;
+  opacity: 0;
+  animation: fadeUp 1s ease 2.3s forwards;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.rama-pill {
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid;
+  transition: all 0.3s;
+}
+.rama-pill.romano {
+  background: rgba(139,32,32,0.15);
+  border-color: rgba(139,32,32,0.5);
+  color: #E07070;
+}
+.rama-pill.romano:hover {
+  background: rgba(139,32,32,0.3);
+  box-shadow: 0 0 20px rgba(139,32,32,0.3);
+}
+.rama-pill.castrexo {
+  background: rgba(26,74,42,0.15);
+  border-color: rgba(26,74,42,0.5);
+  color: #70C090;
+}
+.rama-pill.castrexo:hover {
+  background: rgba(26,74,42,0.3);
+  box-shadow: 0 0 20px rgba(26,74,42,0.3);
+}
+
+.scroll-cta {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeIn 1s ease 3s forwards;
+  cursor: pointer;
+  text-decoration: none;
+}
+.scroll-cta span {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  letter-spacing: 4px;
+  color: var(--text-muted);
+}
+.scroll-arrow {
+  width: 20px;
+  height: 20px;
+  border-right: 1px solid var(--gold-dim);
+  border-bottom: 1px solid var(--gold-dim);
+  transform: rotate(45deg);
+  animation: bounce 2s ease infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: rotate(45deg) translateY(0); }
+  50% { transform: rotate(45deg) translateY(5px); }
+}
+
+/* ————————————————————————————
+   NAV FLOTANTE
+———————————————————————————— */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 16px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.4s, border-bottom 0.4s;
+}
+nav.scrolled {
+  background: rgba(6,5,4,0.95);
+  border-bottom: 1px solid rgba(201,168,76,0.2);
+  backdrop-filter: blur(10px);
+}
+.nav-logo {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1rem;
+  color: var(--gold);
+  letter-spacing: 3px;
+  font-weight: 700;
+}
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--gold); }
+
+/* ————————————————————————————
+   SECCIONES GENERALES
+———————————————————————————— */
+section {
+  position: relative;
+  z-index: 1;
+}
+
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 100px 32px;
+}
+
+.section-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 6px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-label::before, .section-label::after {
+  content: '';
+  flex: 1;
+  max-width: 40px;
+  height: 1px;
+  background: var(--gold-dim);
+}
+
+.section-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 24px;
+}
+.section-title em {
+  color: var(--gold);
+  font-style: normal;
+}
+
+/* ————————————————————————————
+   SECCIÓN: QUÉ ES
+———————————————————————————— */
+#que-es {
+  background: var(--bg2);
+}
+#que-es::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+
+.que-es-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.que-es-text p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+.que-es-text p strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.que-es-visual {
+  position: relative;
+}
+
+.mapa-decorativo {
+  width: 100%;
+  aspect-ratio: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Rosa de los vientos decorativa */
+.rosa {
+  width: 280px;
+  height: 280px;
+  position: relative;
+}
+.rosa-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(201,168,76,0.2);
+  animation: spinSlow linear infinite;
+}
+.rosa-ring:nth-child(1) { animation-duration: 60s; }
+.rosa-ring:nth-child(2) { inset: 20px; border-color: rgba(201,168,76,0.15); animation-duration: 45s; animation-direction: reverse; }
+.rosa-ring:nth-child(3) { inset: 50px; border-color: rgba(201,168,76,0.25); animation-duration: 30s; }
+@keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.rosa-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+}
+.rosa-symbol {
+  font-size: 2.5rem;
+  filter: drop-shadow(0 0 20px rgba(201,168,76,0.5));
+}
+.rosa-text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  letter-spacing: 4px;
+  color: var(--gold-dim);
+}
+
+/* Puntos cardinales */
+.cardinal {
+  position: absolute;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: var(--gold-dim);
+}
+.cardinal.n { top: 0; left: 50%; transform: translateX(-50%); }
+.cardinal.s { bottom: 0; left: 50%; transform: translateX(-50%); }
+.cardinal.e { right: 0; top: 50%; transform: translateY(-50%); }
+.cardinal.w { left: 0; top: 50%; transform: translateY(-50%); }
+
+/* ————————————————————————————
+   SECCIÓN: LAS RAMAS
+———————————————————————————— */
+#ramas {
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.ramas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-top: 60px;
+  border: 1px solid rgba(201,168,76,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.rama-card {
+  padding: 56px 48px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s;
+  cursor: default;
+}
+.rama-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.rama-card:hover::before { opacity: 1; }
+
+.rama-card.romano {
+  background: rgba(139,32,32,0.08);
+  border-right: 1px solid rgba(139,32,32,0.2);
+}
+.rama-card.romano::before {
+  background: radial-gradient(ellipse at 50% 100%, rgba(139,32,32,0.2) 0%, transparent 70%);
+}
+.rama-card.romano:hover {
+  background: rgba(139,32,32,0.15);
+}
+
+.rama-card.castrexo {
+  background: rgba(26,74,42,0.08);
+}
+.rama-card.castrexo::before {
+  background: radial-gradient(ellipse at 50% 100%, rgba(26,74,42,0.2) 0%, transparent 70%);
+}
+.rama-card.castrexo:hover {
+  background: rgba(26,74,42,0.15);
+}
+
+.rama-card-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  display: block;
+  filter: drop-shadow(0 0 16px currentColor);
+  transition: transform 0.3s;
+}
+.rama-card:hover .rama-card-icon { transform: scale(1.1); }
+
+.rama-card-nombre {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.rama-card.romano .rama-card-nombre { color: #E07070; }
+.rama-card.castrexo .rama-card-nombre { color: #70C090; }
+
+.rama-card-subtitulo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  margin-bottom: 24px;
+}
+.rama-card.romano .rama-card-subtitulo { color: rgba(224,112,112,0.5); }
+.rama-card.castrexo .rama-card-subtitulo { color: rgba(112,192,144,0.5); }
+
+.rama-card-desc {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--text-dim);
+  margin-bottom: 28px;
+}
+
+.rama-camps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.camp-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 2px;
+  padding: 5px 12px;
+  border-radius: 3px;
+  border: 1px solid;
+}
+.rama-card.romano .camp-tag {
+  border-color: rgba(139,32,32,0.4);
+  color: #C07070;
+  background: rgba(139,32,32,0.1);
+}
+.rama-card.castrexo .camp-tag {
+  border-color: rgba(26,74,42,0.5);
+  color: #70B090;
+  background: rgba(26,74,42,0.1);
+}
+
+/* ————————————————————————————
+   SECCIÓN: CÓMO FUNCIONA
+———————————————————————————— */
+#como-funciona {
+  background: var(--bg2);
+}
+#como-funciona::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 60px;
+  position: relative;
+}
+
+/* línea conectora */
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 40px;
+  left: calc(12.5%);
+  right: calc(12.5%);
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px 0;
+  position: relative;
+}
+
+.step-num {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1px solid var(--gold-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.5rem;
+  color: var(--gold);
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s;
+  box-shadow: 0 0 0 4px var(--bg2);
+}
+.step:hover .step-num {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px var(--bg2), 0 0 20px rgba(201,168,76,0.3);
+}
+
+.step-icon { font-size: 1.5rem; }
+
+.step-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--text);
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+.step-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ————————————————————————————
+   SECCIÓN: ARENA
+———————————————————————————— */
+#arena {
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.arena-bg-text {
+  position: absolute;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(8rem, 20vw, 18rem);
+  font-weight: 900;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(201,168,76,0.05);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.arena-content {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.arena-text p {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+.arena-features {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 32px;
+}
+
+.arena-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 6px;
+  background: var(--bg2);
+  border: 1px solid rgba(201,168,76,0.08);
+  transition: all 0.2s;
+}
+.arena-feature:hover {
+  border-color: rgba(201,168,76,0.2);
+  background: rgba(201,168,76,0.04);
+  transform: translateX(4px);
+}
+.feature-icon { font-size: 1.3rem; flex-shrink: 0; }
+.feature-text { font-size: 1rem; color: var(--text-dim); line-height: 1.5; }
+.feature-text strong { color: var(--text); font-weight: 600; }
+
+/* Cronómetro decorativo */
+.crono-display {
+  background: var(--bg3);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.crono-display::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--romano), var(--gold), var(--castrexo));
+}
+
+.crono-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 4px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.crono-time {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 4rem;
+  color: #4A9FD4;
+  text-shadow: 0 0 30px rgba(74,159,212,0.5);
+  font-weight: 900;
+  letter-spacing: 4px;
+}
+.crono-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.mini-pruebas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 24px;
+}
+.mini-prueba {
+  padding: 12px 16px;
+  border-radius: 6px;
+  border: 1px solid;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+.mini-prueba.done {
+  background: rgba(39,174,96,0.1);
+  border-color: rgba(39,174,96,0.4);
+  color: #70C090;
+}
+.mini-prueba.pending {
+  background: rgba(255,255,255,0.02);
+  border-color: rgba(255,255,255,0.1);
+  color: var(--text-muted);
+}
+.mini-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.mini-prueba.done .mini-dot { background: #27AE60; box-shadow: 0 0 6px rgba(39,174,96,0.6); }
+.mini-prueba.pending .mini-dot { background: var(--bg4); border: 1px solid #333; }
+
+/* ————————————————————————————
+   SECCIÓN: DATOS
+———————————————————————————— */
+#datos {
+  background: var(--bg3);
+  border-top: 1px solid rgba(201,168,76,0.1);
+  border-bottom: 1px solid rgba(201,168,76,0.1);
+}
+
+.datos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dato-item {
+  background: var(--bg3);
+  padding: 48px 32px;
+  text-align: center;
+  transition: background 0.3s;
+}
+.dato-item:hover { background: rgba(201,168,76,0.04); }
+
+.dato-num {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  background: linear-gradient(180deg, var(--gold-light), var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.dato-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* ————————————————————————————
+   CITA / QUOTE
+———————————————————————————— */
+.quote-section {
+  padding: 80px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+.quote-section::before {
+  content: '"';
+  position: absolute;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 30rem;
+  color: rgba(201,168,76,0.02);
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  line-height: 1;
+}
+
+blockquote {
+  max-width: 700px;
+  margin: 0 auto;
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  font-style: italic;
+  color: var(--text-dim);
+  line-height: 1.6;
+  position: relative;
+}
+blockquote cite {
+  display: block;
+  font-size: 0.7rem;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 4px;
+  color: var(--gold-dim);
+  margin-top: 20px;
+  font-style: normal;
+}
+
+/* ————————————————————————————
+   FOOTER
+———————————————————————————— */
+footer {
+  background: var(--bg2);
+  border-top: 1px solid rgba(201,168,76,0.2);
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-logo {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.4rem;
+  color: var(--gold);
+  letter-spacing: 4px;
+}
+.footer-logo span {
+  display: block;
+  font-size: 0.5rem;
+  letter-spacing: 8px;
+  color: var(--text-muted);
+  font-family: 'Cinzel', serif;
+  margin-top: 2px;
+}
+
+.footer-divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+
+.footer-text {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+}
+
+/* ————————————————————————————
+   ANIMACIONES REVEAL
+———————————————————————————— */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ————————————————————————————
+   RESPONSIVE
+———————————————————————————— */
+@media (max-width: 768px) {
+  nav { padding: 14px 20px; }
+  .nav-links { display: none; }
+
+  .que-es-grid { grid-template-columns: 1fr; gap: 40px; }
+  .mapa-decorativo { display: none; }
+
+  .ramas-grid { grid-template-columns: 1fr; }
+  .rama-card { padding: 40px 28px; }
+  .rama-card.romano { border-right: none; border-bottom: 1px solid rgba(139,32,32,0.2); }
+
+  .steps { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .steps::before { display: none; }
+
+  .arena-content { grid-template-columns: 1fr; gap: 40px; }
+
+  .datos-grid { grid-template-columns: 1fr 1fr; }
+
+  .section-inner { padding: 70px 20px; }
+}
+
+@media (max-width: 480px) {
+  .steps { grid-template-columns: 1fr; }
+  .datos-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- PARTÍCULAS -->
+<div id="particles"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">AETERNUS</div>
+  <ul class="nav-links">
+    <li><a href="#que-es">La Actividad</a></li>
+    <li><a href="#ramas">Las Ramas</a></li>
+    <li><a href="#como-funciona">Cómo Funciona</a></li>
+    <li><a href="#arena">La Arena</a></li>
+  </ul>
+</nav>
+
+<!-- ▬▬▬ HERO ▬▬▬ -->
+<section class="hero" id="inicio">
+  <div class="hero-xxv">AETERNUS</div>
+  <h1 class="hero-title">Arde Lucus</h1>
+  <div class="hero-subtitle">XXV Años · Una Ciudad · Un Destino</div>
+
+  <div class="hero-divider"></div>
+
+  <p class="hero-tagline">
+    Dos ramas. Seis campamentos. Una arena donde el honor y la estrategia deciden el destino de Lucus Augusti.
+  </p>
+
+  <div class="hero-ramas">
+    <div class="rama-pill romano">⚔️ Rama Romana</div>
+    <div class="rama-pill castrexo">🌿 Rama Castrexa</div>
+  </div>
+
+  <a href="#que-es" class="scroll-cta">
+    <span>Descubrir</span>
+    <div class="scroll-arrow"></div>
+  </a>
+
+  <div class="hero-lines"></div>
+</section>
+
+<!-- ▬▬▬ QUÉ ES ▬▬▬ -->
+<section id="que-es">
+  <div class="section-inner">
+    <div class="que-es-grid">
+      <div class="que-es-text">
+        <div class="section-label reveal">La Actividad</div>
+        <h2 class="section-title reveal reveal-delay-1">
+          Una batalla de <em>ingenio</em>, trabajo en equipo y resistencia
+        </h2>
+        <p class="reveal reveal-delay-2">
+          <strong>AETERNUS — Arde Lucus</strong> es la gran actividad central del campamento: una prueba por equipos inspirada en las civilizaciones que habitaron Lucus Augusti, la antigua ciudad romana hoy conocida como Lugo.
+        </p>
+        <p class="reveal reveal-delay-3">
+          Los participantes, divididos en <strong>Rama Romana</strong> y <strong>Rama Castrexa</strong>, competirán a través de una serie de pruebas de habilidad, conocimiento histórico y cooperación. Cada campamento tiene su papel y cada decisión cuenta.
+        </p>
+        <p class="reveal reveal-delay-4">
+          La acción se sigue en tiempo real desde el <strong>Panel Maestro</strong>, convirtiendo cada prueba en un espectáculo estratégico visible para todos.
+        </p>
+      </div>
+
+      <div class="que-es-visual reveal">
+        <div class="mapa-decorativo">
+          <div class="rosa">
+            <div class="rosa-ring"></div>
+            <div class="rosa-ring"></div>
+            <div class="rosa-ring"></div>
+            <div class="rosa-center">
+              <span class="rosa-symbol">🏛️</span>
+              <span class="rosa-text">LUCUS AUGUSTI</span>
+            </div>
+            <span class="cardinal n">N</span>
+            <span class="cardinal s">S</span>
+            <span class="cardinal e">E</span>
+            <span class="cardinal w">O</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ▬▬▬ DATOS ▬▬▬ -->
+<section id="datos">
+  <div class="section-inner" style="padding-top:60px; padding-bottom:60px;">
+    <div class="datos-grid">
+      <div class="dato-item reveal">
+        <div class="dato-num">2</div>
+        <div class="dato-label">Ramas históricas</div>
+      </div>
+      <div class="dato-item reveal reveal-delay-1">
+        <div class="dato-num">6</div>
+        <div class="dato-label">Campamentos</div>
+      </div>
+      <div class="dato-item reveal reveal-delay-2">
+        <div class="dato-num">12</div>
+        <div class="dato-label">Pruebas por grupo</div>
+      </div>
+      <div class="dato-item reveal reveal-delay-3">
+        <div class="dato-num">∞</div>
+        <div class="dato-label">Minutos de adrenalina</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ▬▬▬ LAS RAMAS ▬▬▬ -->
+<section id="ramas">
+  <div class="section-inner">
+    <div class="section-label reveal" style="justify-content:center;">Las Facciones</div>
+    <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">
+      Elige tu <em>destino</em>
+    </h2>
+  </div>
+
+  <div class="ramas-grid reveal">
+    <!-- ROMANO -->
+    <div class="rama-card romano">
+      <span class="rama-card-icon">⚔️</span>
+      <div class="rama-card-nombre">Rama Romana</div>
+      <div class="rama-card-subtitulo">LEGIO · HONOS · VICTORIA</div>
+      <p class="rama-card-desc">
+        Herederos de Roma, los campamentos romanos encarnan la disciplina militar y la estrategia. Su fortaleza reside en la organización y la capacidad de ejecutar pruebas con precisión bajo presión. En la arena, cada segundo cuenta.
+      </p>
+      <div class="rama-camps">
+        <span class="camp-tag">Cohors III</span>
+        <span class="camp-tag">Caetra</span>
+        <span class="camp-tag">Pretoriana</span>
+      </div>
+    </div>
+
+    <!-- CASTREXO -->
+    <div class="rama-card castrexo">
+      <span class="rama-card-icon">🌿</span>
+      <div class="rama-card-nombre">Rama Castrexa</div>
+      <div class="rama-card-subtitulo">TERRA · VÍNCULOS · MEMORIA</div>
+      <p class="rama-card-desc">
+        Guardianes de la cultura castrexa, estos campamentos dominan el conocimiento del territorio y la historia ancestral. Su ventaja está en la adaptabilidad y en la profunda conexión con las raíces de Lucus Augusti.
+      </p>
+      <div class="rama-camps">
+        <span class="camp-tag">Lugdunum</span>
+        <span class="camp-tag">Treba Lucis</span>
+        <span class="camp-tag">Terra Copora</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ▬▬▬ CÓMO FUNCIONA ▬▬▬ -->
+<section id="como-funciona">
+  <div class="section-inner">
+    <div class="section-label reveal" style="justify-content:center;">El Sistema</div>
+    <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">
+      Cómo funciona <em>la arena</em>
+    </h2>
+
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num"><span class="step-icon">🏛️</span></div>
+        <div class="step-title">El Maestro lanza</div>
+        <p class="step-desc">El Maestro de Juego inicia cada misión en tiempo real desde el panel central, asignando grupos a la arena.</p>
+      </div>
+      <div class="step reveal reveal-delay-1">
+        <div class="step-num"><span class="step-icon">📜</span></div>
+        <div class="step-title">Los campamentos actúan</div>
+        <p class="step-desc">Cada campamento recibe sus pruebas exclusivas y las va completando a su ritmo, marcándolas en su panel táctil.</p>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <div class="step-num"><span class="step-icon">⏱️</span></div>
+        <div class="step-title">El tiempo corre</div>
+        <p class="step-desc">Un cronómetro en vivo mide el tiempo de cada grupo desde que entra hasta que completa todas las pruebas y supera la final.</p>
+      </div>
+      <div class="step reveal reveal-delay-3">
+        <div class="step-num"><span class="step-icon">🏆</span></div>
+        <div class="step-title">El ranking decide</div>
+        <p class="step-desc">Los tiempos se ordenan automáticamente en el ranking final. El grupo más rápido y completo se corona vencedor.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ▬▬▬ LA ARENA ▬▬▬ -->
+<section id="arena">
+  <div class="arena-bg-text">ARENA</div>
+  <div class="section-inner">
+    <div class="arena-content">
+      <div class="arena-text">
+        <div class="section-label reveal">Tecnología al servicio de la épica</div>
+        <h2 class="section-title reveal reveal-delay-1">
+          Seguimiento en <em>tiempo real</em>
+        </h2>
+        <p class="reveal reveal-delay-2">
+          AETERNA XXV utiliza un sistema digital propio que conecta todos los campamentos con el Panel Maestro al instante. Nada se pierde, todo se ve.
+        </p>
+
+        <div class="arena-features">
+          <div class="arena-feature reveal reveal-delay-2">
+            <span class="feature-icon">📱</span>
+            <div class="feature-text"><strong>Panel de Campamento</strong> — Interfaz táctil para que cada campamento marque sus pruebas completadas en el momento exacto.</div>
+          </div>
+          <div class="arena-feature reveal reveal-delay-3">
+            <span class="feature-icon">🖥️</span>
+            <div class="feature-text"><strong>Panel Maestro</strong> — Vista global de todos los grupos activos, con cronómetros en vivo y ranking automático.</div>
+          </div>
+          <div class="arena-feature reveal reveal-delay-4">
+            <span class="feature-icon">📜</span>
+            <div class="feature-text"><strong>Chat de mando</strong> — Comunicación directa entre el Maestro y todos los campamentos durante la prueba.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mockup del panel -->
+      <div class="crono-display reveal reveal-delay-2">
+        <div class="crono-label">Grupo en arena · Cronómetro activo</div>
+        <div class="crono-time" id="fakeCrono">0m 0s</div>
+        <div class="crono-sub">TIEMPO TRANSCURRIDO</div>
+
+        <div class="mini-pruebas">
+          <div class="mini-prueba done">
+            <div class="mini-dot"></div>
+            Cohors III · P1
+          </div>
+          <div class="mini-prueba done">
+            <div class="mini-dot"></div>
+            Cohors III · P2
+          </div>
+          <div class="mini-prueba done">
+            <div class="mini-dot"></div>
+            Caetra · P1
+          </div>
+          <div class="mini-prueba pending">
+            <div class="mini-dot"></div>
+            Caetra · P2
+          </div>
+          <div class="mini-prueba pending">
+            <div class="mini-dot"></div>
+            Pretoriana · P1
+          </div>
+          <div class="mini-prueba pending">
+            <div class="mini-dot"></div>
+            Pretoriana · P2
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ▬▬▬ CITA ▬▬▬ -->
+<div class="quote-section reveal">
+  <blockquote>
+    "No basta con llegar primero. Hay que llegar con honor, con el sello de cada prueba superada y el nombre de tu campamento grabado en la piedra."
+    <cite>— El Maestro de la Arena</cite>
+  </blockquote>
+</div>
+
+<!-- ▬▬▬ FOOTER ▬▬▬ -->
+<footer>
+  <div class="footer-logo">
+    🏛 AETERNUS
+    <span>25 AÑOS · UNA CIUDAD · UN DESTINO · ARDE LUCUS</span>
+  </div>
+  <div class="footer-divider"></div>
+  <div class="footer-text">LUCUS AUGUSTI · GALLAECIA · HISPANIA</div>
+  <div class="footer-text" style="margin-top:4px;">✦ &nbsp; ROMANO · CASTREXO · AETERNA &nbsp; ✦</div>
+</footer>
+
+<script>
+// ————— PARTÍCULAS ASCUA —————
+const particleContainer = document.getElementById('particles');
+function crearParticula() {
+  const p = document.createElement('div');
+  p.classList.add('particle');
+  const size = Math.random() * 4 + 1;
+  p.style.cssText = `
+    width: ${size}px;
+    height: ${size}px;
+    left: ${Math.random() * 100}%;
+    bottom: ${Math.random() * 20}%;
+    --drift: ${(Math.random() - 0.5) * 60}px;
+    animation-duration: ${Math.random() * 6 + 5}s;
+    animation-delay: ${Math.random() * 8}s;
+  `;
+  particleContainer.appendChild(p);
+  setTimeout(() => p.remove(), 14000);
+}
+setInterval(crearParticula, 300);
+for (let i = 0; i < 20; i++) setTimeout(crearParticula, i * 150);
+
+// ————— NAV SCROLL —————
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ————— REVEAL ON SCROLL —————
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+reveals.forEach(r => observer.observe(r));
+
+// ————— CRONÓMETRO FALSO (demo) —————
+let seg = 0;
+const cronoEl = document.getElementById('fakeCrono');
+setInterval(() => {
+  seg++;
+  const m = Math.floor(seg / 60);
+  const s = seg % 60;
+  cronoEl.textContent = `${m}m ${s}s`;
+}, 1000);
+
+// ————— PRUEBAS DEMO ANIMACIÓN —————
+const pendientes = document.querySelectorAll('.mini-prueba.pending');
+let idx = 0;
+setInterval(() => {
+  if (idx < pendientes.length) {
+    pendientes[idx].classList.remove('pending');
+    pendientes[idx].classList.add('done');
+    const dot = pendientes[idx].querySelector('.mini-dot');
+    dot.style.background = '#27AE60';
+    dot.style.boxShadow = '0 0 6px rgba(39,174,96,0.6)';
+    idx++;
+  } else {
+    // Reset
+    idx = 0;
+    pendientes.forEach(p => {
+      p.classList.add('pending');
+      p.classList.remove('done');
+      const dot = p.querySelector('.mini-dot');
+      dot.style.background = '';
+      dot.style.boxShadow = '';
+    });
+  }
+}, 1800);
+</script>
+</body>
+</html>
