@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Laberinto de los Sentimientos</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=Abril+Fatface&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080810;
+  --bg2:#0f0f1a;
+  --bg3:#161625;
+  --border:#252538;
+  --border-lt:#35355a;
+  --text:#e2dff0;
+  --text-dim:#8888b0;
+  --text-muted:#444466;
+  --love:#e84393;
+  --accent:#c084fc;
+  --accent-dim:#5b21b6;
+  --green:#22c55e;
+  --joy:#f5c842;
+  --surprise:#00c4a7;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  background:var(--bg);
+  font-family:'DM Sans',sans-serif;
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  overflow:hidden;
+}
+
+/* FONDO ANIMADO */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(232,67,147,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 80%, rgba(192,132,252,0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(0,196,167,0.04) 0%, transparent 60%);
+  pointer-events:none;
+  animation:bgpulse 8s ease-in-out infinite alternate;
+}
+@keyframes bgpulse{
+  from{opacity:0.7;}
+  to{opacity:1;}
+}
+
+/* PARTÍCULAS DECORATIVAS */
+.particle{
+  position:fixed;
+  border-radius:50%;
+  pointer-events:none;
+  opacity:0;
+  animation:float linear infinite;
+}
+@keyframes float{
+  0%{opacity:0;transform:translateY(100vh) scale(0);}
+  10%{opacity:0.6;}
+  90%{opacity:0.3;}
+  100%{opacity:0;transform:translateY(-10vh) scale(1);}
+}
+
+/* CONTENEDOR CENTRAL */
+.wrapper{
+  position:relative;
+  z-index:10;
+  width:100%;
+  max-width:560px;
+  animation:fadein 1s ease both;
+}
+@keyframes fadein{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* LOGO / CABECERA */
+.logo-area{
+  text-align:center;
+  margin-bottom:40px;
+}
+.logo-eyebrow{
+  font-size:9px;
+  letter-spacing:4px;
+  color:var(--text-muted);
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+.logo-titulo{
+  font-family:'Abril Fatface',serif;
+  font-size:clamp(26px,5vw,42px);
+  background:linear-gradient(135deg,var(--love) 0%,var(--accent) 50%,var(--joy) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1.15;
+  margin-bottom:10px;
+}
+.logo-sub{
+  font-size:12px;
+  color:var(--text-muted);
+  font-style:italic;
+  letter-spacing:1px;
+}
+
+/* SEPARADOR */
+.sep{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:32px;
+}
+.sep-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border-lt),transparent);}
+.sep-emoji{font-size:18px;opacity:0.7;}
+
+/* TARJETAS */
+.cards{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.card{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:20px 22px;
+  text-decoration:none;
+  color:inherit;
+  transition:all 0.3s cubic-bezier(.4,0,.2,1);
+  position:relative;
+  overflow:hidden;
+  animation:fadein 1s ease both;
+}
+.card:nth-child(1){animation-delay:0.15s;}
+.card:nth-child(2){animation-delay:0.3s;}
+
+.card::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  opacity:0;
+  transition:opacity 0.3s;
+}
+.card-master::before{background:radial-gradient(ellipse at 0% 50%,rgba(192,132,252,0.08),transparent 70%);}
+.card-player::before{background:radial-gradient(ellipse at 0% 50%,rgba(232,67,147,0.08),transparent 70%);}
+
+.card:hover{
+  border-color:var(--border-lt);
+  transform:translateY(-2px);
+  box-shadow:0 12px 32px rgba(0,0,0,0.4);
+}
+.card:hover::before{opacity:1;}
+
+.card-master:hover{border-color:var(--accent-dim);}
+.card-player:hover{border-color:rgba(232,67,147,0.4);}
+
+/* Barra lateral de color */
+.card::after{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:3px;
+  border-radius:12px 0 0 12px;
+  transition:opacity 0.3s;
+}
+.card-master::after{background:linear-gradient(180deg,var(--accent),var(--accent-dim));}
+.card-player::after{background:linear-gradient(180deg,var(--love),rgba(232,67,147,0.3));}
+
+.card-icon{
+  font-size:32px;
+  flex-shrink:0;
+  width:52px;
+  height:52px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:10px;
+  transition:all 0.3s;
+}
+.card:hover .card-icon{transform:scale(1.08);}
+
+.card-body{flex:1;min-width:0;}
+.card-tag{
+  font-size:8px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.card-master .card-tag{color:var(--accent);}
+.card-player .card-tag{color:var(--love);}
+
+.card-name{
+  font-family:'Playfair Display',serif;
+  font-size:16px;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:4px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.card-desc{
+  font-size:11px;
+  color:var(--text-muted);
+  font-style:italic;
+  line-height:1.4;
+}
+
+.card-arrow{
+  font-size:18px;
+  color:var(--text-muted);
+  flex-shrink:0;
+  transition:all 0.3s;
+  opacity:0.5;
+}
+.card:hover .card-arrow{
+  transform:translateX(4px);
+  opacity:1;
+}
+.card-master:hover .card-arrow{color:var(--accent);}
+.card-player:hover .card-arrow{color:var(--love);}
+
+/* PIE */
+.footer{
+  text-align:center;
+  margin-top:36px;
+  font-size:10px;
+  color:var(--text-muted);
+  letter-spacing:1px;
+  animation:fadein 1s ease 0.5s both;
+}
+.footer span{
+  display:inline-block;
+  width:4px;height:4px;
+  border-radius:50%;
+  background:var(--border-lt);
+  margin:0 8px;
+  vertical-align:middle;
+}
+</style>
+</head>
+<body>
+
+<!-- Partículas -->
+<script>
+(function(){
+  const colors=['#e84393','#c084fc','#f5c842','#00c4a7'];
+  for(let i=0;i<12;i++){
+    const d=document.createElement('div');
+    d.className='particle';
+    const s=Math.random()*4+2;
+    d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${colors[i%colors.length]};animation-duration:${Math.random()*12+8}s;animation-delay:${Math.random()*8}s;`;
+    document.body.appendChild(d);
+  }
+})();
+</script>
+
+<div class="wrapper">
+
+  <!-- CABECERA -->
+  <div class="logo-area">
+    <div class="logo-eyebrow">Escape Room · Colegio Portomarín</div>
+    <div class="logo-titulo">El Laberinto<br>de los Sentimientos</div>
+    <div class="logo-sub">Selecciona tu panel para comenzar</div>
+  </div>
+
+  <div class="sep">
+    <div class="sep-line"></div>
+    <div class="sep-emoji">🎭</div>
+    <div class="sep-line"></div>
+  </div>
+
+  <!-- TARJETAS -->
+  <div class="cards">
+
+    <a class="card card-master" href="maestrocoleportotmarin.html">
+      <div class="card-icon">🎮</div>
+      <div class="card-body">
+        <div class="card-tag">Game Master</div>
+        <div class="card-name">Panel de Control</div>
+        <div class="card-desc">Cronómetro, estadísticas, mensajes y gestión de respuestas en tiempo real</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="card card-player" href="jugadorescapecole_portomarin.html">
+      <div class="card-icon">🧩</div>
+      <div class="card-body">
+        <div class="card-tag">Jugador</div>
+        <div class="card-name">Panel del Jugador</div>
+        <div class="card-desc">Interfaz de las 9 pruebas emocionales — para mostrar en la tablet o pantalla</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+  </div>
+
+  <!-- PIE -->
+  <div class="footer">
+    El Laberinto de los Sentimientos
+    <span></span>
+    Colegio Portomarín
+    <span></span>
+    2025
+  </div>
+
+</div>
+</body>
+</html>

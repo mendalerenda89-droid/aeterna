@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Laberinto de los Sentimientos — Panel del Jugador</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=Abril+Fatface&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;
+  --bg2:#12121a;
+  --bg3:#1a1a26;
+  --border:#2a2a3d;
+  --border-lt:#3d3d5c;
+  --text:#e8e4f0;
+  --text-dim:#9090b8;
+  --text-muted:#555577;
+  --love:#e84393;
+  --love-dim:#8b1a54;
+  --joy:#f5c842;
+  --joy-dim:#7a6010;
+  --sad:#4a90d9;
+  --sad-dim:#1a3a6b;
+  --anger:#e84a1a;
+  --fear:#7b4de8;
+  --surprise:#00c4a7;
+  --calm:#a8d8a8;
+  --accent:#c084fc;
+  --accent-dim:#5b21b6;
+  --green:#22c55e;
+  --red:#ef4444;
+  --gold:#f5c842;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;min-height:100vh;color:var(--text);overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(232,67,147,0.07) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(192,132,252,0.06) 0%,transparent 50%),radial-gradient(ellipse at 50% 50%,rgba(74,144,217,0.04) 0%,transparent 60%);pointer-events:none;z-index:0;}
+
+/* FB STATUS */
+.fb-status{position:fixed;top:12px;right:14px;z-index:99;display:flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:1px;color:var(--text-muted);background:rgba(18,18,26,0.95);padding:5px 10px;border-radius:20px;border:1px solid var(--border);}
+.fb-dot{width:7px;height:7px;border-radius:50%;background:#444;transition:all 0.4s;}
+.fb-dot.ok{background:var(--green);box-shadow:0 0 6px var(--green);}
+.fb-dot.err{background:var(--red);}
+.fb-dot.wait{background:var(--gold);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* WRAPPER */
+.wrap{position:relative;z-index:1;width:min(880px,96vw);margin:0 auto;padding:24px 0 60px;}
+
+/* CABECERA */
+.cabecera{text-align:center;padding:40px 20px 32px;position:relative;}
+.eyebrow{font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:4px;color:var(--text-muted);text-transform:uppercase;margin-bottom:12px;}
+.titulo-principal{font-family:'Abril Fatface',serif;font-size:clamp(28px,6vw,58px);background:linear-gradient(135deg,var(--love),var(--accent),var(--joy));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:8px;}
+.subtitulo{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(12px,2vw,16px);color:var(--text-dim);}
+.sep{width:80px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:20px auto 0;}
+
+/* ESPERA */
+#pantalla-espera{text-align:center;padding:50px 20px 60px;}
+.espera-emoji{font-size:72px;margin-bottom:24px;display:block;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.espera-titulo{font-family:'Playfair Display',serif;font-size:clamp(20px,3.5vw,34px);color:var(--text);margin-bottom:12px;}
+.espera-texto{font-size:15px;color:var(--text-dim);line-height:1.8;max-width:460px;margin:0 auto 28px;}
+.espera-chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-lt);padding:10px 22px;border-radius:30px;color:var(--text-muted);font-size:11px;letter-spacing:2px;text-transform:uppercase;}
+.espera-pts{display:flex;justify-content:center;gap:6px;margin-top:16px;}
+.espera-pt{width:8px;height:8px;border-radius:50%;background:var(--border-lt);animation:ep 1.4s ease-in-out infinite;}
+.espera-pt:nth-child(2){animation-delay:0.2s;}.espera-pt:nth-child(3){animation-delay:0.4s;}
+@keyframes ep{0%,100%{background:var(--border-lt);transform:scale(1)}50%{background:var(--accent);transform:scale(1.4)}}
+
+/* PAUSA */
+#pantalla-pausa{display:none;text-align:center;padding:44px 20px 50px;}
+#pantalla-pausa.show{display:block;}
+.pausa-emoji{font-size:58px;margin-bottom:18px;display:block;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.pausa-titulo{font-family:'Playfair Display',serif;font-size:clamp(20px,3.5vw,32px);color:var(--text);margin-bottom:10px;}
+.pausa-texto{font-size:14px;color:var(--text-dim);font-style:italic;line-height:1.7;max-width:380px;margin:0 auto;}
+.pausa-chip{display:inline-block;border:1px dashed var(--border-lt);padding:8px 20px;margin-top:18px;color:var(--text-muted);font-size:10px;letter-spacing:3px;text-transform:uppercase;border-radius:4px;}
+
+/* JUEGO */
+#contenido-juego{display:none;}
+
+/* CRONO */
+.crono-block{margin-bottom:24px;text-align:center;}
+.crono-lbl{font-size:10px;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;}
+.crono-display{font-family:'Abril Fatface',serif;font-size:clamp(52px,10vw,88px);color:var(--text);letter-spacing:4px;line-height:1;transition:color 0.5s;}
+.crono-display.urgente{color:var(--anger);animation:cu 1s ease-in-out infinite;}
+.crono-display.critico{color:var(--red);animation:cc 0.5s ease-in-out infinite;}
+@keyframes cu{0%,100%{opacity:1}50%{opacity:0.6}}
+@keyframes cc{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.75;transform:scale(1.03)}}
+.crono-barra{height:6px;background:var(--bg3);border-radius:3px;margin:12px auto 0;max-width:400px;overflow:hidden;}
+.crono-fill{height:100%;width:100%;background:linear-gradient(90deg,var(--surprise),var(--accent));transition:width 1s linear,background 0.5s;border-radius:3px;}
+.crono-fill.urgente{background:linear-gradient(90deg,var(--anger),var(--fear));}
+.crono-fill.critico{background:var(--red);}
+.crono-sep{width:60px;height:1px;background:var(--border);margin:18px auto;}
+
+/* MSG MAESTRO */
+#msg-maestro-wrap{display:none;margin-bottom:18px;}
+#msg-maestro-wrap.show{display:block;animation:msgIn 0.5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes msgIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.msg-box{background:rgba(192,132,252,0.08);border:1px solid var(--accent-dim);border-left:3px solid var(--accent);padding:14px 18px;border-radius:6px;}
+.msg-lbl{font-size:9px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:5px;}
+.msg-txt{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:var(--text);line-height:1.5;}
+
+/* AVISO BLOQUEO */
+.bloqueo-banner{display:none;text-align:center;padding:28px 20px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:8px;margin-bottom:16px;}
+.bloqueo-banner.show{display:block;animation:bloqueoIn 0.4s ease;}
+@keyframes bloqueoIn{from{opacity:0;transform:scale(0.97)}to{opacity:1;transform:scale(1)}}
+.bloqueo-emoji{font-size:44px;margin-bottom:12px;display:block;animation:shake2 0.5s ease;}
+@keyframes shake2{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+.bloqueo-titulo{font-family:'Playfair Display',serif;font-size:22px;color:var(--red);margin-bottom:6px;}
+.bloqueo-texto{font-size:13px;color:var(--text-dim);font-style:italic;margin-bottom:14px;}
+.bloqueo-crono{font-family:'Abril Fatface',serif;font-size:48px;color:var(--red);letter-spacing:3px;}
+
+/* PROGRESO */
+.prog-block{margin-bottom:24px;}
+.prog-lbl{font-size:10px;letter-spacing:3px;color:var(--text-muted);text-align:center;text-transform:uppercase;margin-bottom:8px;}
+.prog-track{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--love),var(--accent),var(--joy));width:0%;transition:width 0.9s cubic-bezier(.4,0,.2,1);border-radius:4px;}
+.prog-count{font-size:13px;color:var(--text-muted);text-align:center;margin-top:6px;}
+.prog-count span{color:var(--accent);}
+
+/* MAPA */
+.mapa-prog{display:flex;align-items:center;justify-content:center;margin-bottom:20px;flex-wrap:wrap;gap:2px;}
+.mapa-pt{width:26px;height:26px;border-radius:50%;border:2px solid var(--border-lt);background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text-muted);transition:all 0.4s;flex-shrink:0;}
+.mapa-pt.done{background:var(--accent-dim);border-color:var(--accent);color:var(--text);box-shadow:0 0 10px rgba(192,132,252,0.4);}
+.mapa-pt.final{width:32px;height:32px;font-size:16px;border-color:var(--love);color:var(--love);}
+.mapa-pt.final.done{background:var(--love-dim);border-color:var(--love);color:var(--text);box-shadow:0 0 14px rgba(232,67,147,0.5);}
+.mapa-ln{width:18px;height:2px;background:var(--border);transition:background 0.4s;flex-shrink:0;border-radius:1px;}
+.mapa-ln.done{background:var(--accent-dim);}
+
+/* GRID DE PRUEBAS */
+.pruebas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+@media(max-width:580px){.pruebas-grid{grid-template-columns:1fr 1fr;gap:9px;}}
+.pcard{background:var(--bg2);border:1px solid var(--border);border-radius:10px;position:relative;padding:16px 14px 14px;cursor:pointer;transition:all 0.2s;user-select:none;}
+.pcard:hover:not(.resuelta):not(.bloqueada){border-color:var(--border-lt);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.3);}
+.pcard.activa{border-color:var(--accent);background:rgba(192,132,252,0.07);box-shadow:0 0 0 2px rgba(192,132,252,0.2);}
+.pcard.resuelta{background:rgba(34,197,94,0.06);border-color:rgba(34,197,94,0.3);cursor:default;}
+.pcard.resuelta::after{content:'✓';position:absolute;top:8px;right:10px;color:var(--green);font-size:14px;font-weight:bold;}
+.pcard.bloqueada{opacity:0.5;cursor:not-allowed;}
+.pcard-emoji{font-size:24px;margin-bottom:6px;display:block;}
+.pcard-num{font-size:9px;letter-spacing:2px;color:var(--text-muted);margin-bottom:3px;text-transform:uppercase;}
+.pcard-title{font-family:'Playfair Display',serif;font-size:clamp(11px,1.4vw,14px);color:var(--text);line-height:1.3;margin-bottom:4px;}
+.pcard.resuelta .pcard-title{color:var(--green);}
+.pcard-tipo{font-size:9px;color:var(--text-muted);font-style:italic;}
+.pcard-bloq{font-size:11px;color:var(--red);font-weight:500;letter-spacing:1px;margin-top:2px;animation:blink 1s ease-in-out infinite;}
+.pcard.bloq-activo{border-color:rgba(239,68,68,0.4);background:rgba(239,68,68,0.05);cursor:pointer;}
+
+/* PANEL ENTRADA */
+.panel-entrada{display:none;background:var(--bg2);border:1px solid var(--border-lt);border-radius:10px;padding:20px;margin-bottom:16px;}
+.panel-entrada.visible{display:block;animation:pe 0.3s ease;}
+@keyframes pe{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.panel-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:12px;}
+.panel-titulo{font-family:'Playfair Display',serif;font-size:18px;color:var(--text);}
+.panel-emoji{font-size:28px;}
+.panel-inst{font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;padding:12px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--accent-dim);}
+.input-fila{display:flex;gap:8px;}
+.input-code{flex:1;background:var(--bg);border:2px solid var(--border-lt);border-radius:8px;padding:12px 16px;font-family:'Abril Fatface',serif;font-size:22px;color:var(--text);letter-spacing:6px;text-align:center;text-transform:uppercase;outline:none;transition:border-color 0.2s;}
+.input-code:focus{border-color:var(--accent);}
+.input-code.error{border-color:var(--red);animation:shake 0.4s ease;background:rgba(239,68,68,0.05);}
+.input-code.correcto{border-color:var(--green);background:rgba(34,197,94,0.05);}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.btn-ver{background:var(--accent-dim);color:var(--text);border:none;padding:12px 20px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:1px;cursor:pointer;transition:all 0.2s;flex-shrink:0;}
+.btn-ver:hover{background:var(--accent);}
+.feedback{margin-top:8px;font-size:13px;min-height:18px;font-style:italic;}
+.feedback.ok{color:var(--green);}.feedback.fail{color:var(--red);}
+.intentos-info{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+.intentos-lbl{font-size:10px;letter-spacing:1px;color:var(--text-muted);}
+.intentos-dots{display:flex;gap:4px;}
+.idot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border-lt);transition:all 0.3s;}
+.idot.usado{border-color:var(--red);background:var(--red);}
+.idot.libre{border-color:var(--accent-dim);}
+
+/* PISTA FINAL */
+.pista-final{display:none;border:2px solid var(--love);padding:28px 24px;margin-top:8px;background:rgba(232,67,147,0.06);text-align:center;border-radius:12px;}
+.pista-final.show{display:block;animation:finalIn 1s ease;}
+@keyframes finalIn{from{opacity:0;transform:scale(0.94);filter:blur(4px)}to{opacity:1;transform:scale(1);filter:blur(0)}}
+.pf-emoji{font-size:52px;display:block;margin-bottom:12px;animation:float 3s ease-in-out infinite;}
+.pf-lbl{font-size:9px;letter-spacing:5px;color:var(--love);margin-bottom:10px;text-transform:uppercase;}
+.pf-titulo{font-family:'Abril Fatface',serif;font-size:clamp(18px,3vw,30px);background:linear-gradient(135deg,var(--love),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:14px;}
+.pf-texto{font-size:14px;color:var(--text-dim);font-style:italic;line-height:1.7;max-width:520px;margin:0 auto 16px;}
+.pf-codigo{display:inline-block;font-family:'Abril Fatface',serif;font-size:clamp(22px,4vw,40px);color:var(--love);letter-spacing:8px;border:2px solid var(--love);padding:12px 28px;border-radius:8px;animation:glow 2.5s ease-in-out infinite;}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(232,67,147,0)}50%{box-shadow:0 0 20px rgba(232,67,147,0.3)}}
+
+/* FIN TIEMPO */
+#fin-tiempo{display:none;text-align:center;padding:40px 20px;}
+#fin-tiempo.show{display:block;}
+.fin-emoji{font-size:60px;display:block;margin-bottom:14px;}
+.fin-titulo{font-family:'Abril Fatface',serif;font-size:clamp(24px,4.5vw,42px);color:var(--anger);margin-bottom:12px;}
+.fin-texto{font-size:14px;color:var(--text-dim);font-style:italic;line-height:1.7;max-width:440px;margin:0 auto;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(5,5,10,0.88);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.modal-overlay.show{display:flex;}
+.modal-box{background:var(--bg2);border:1px solid var(--border-lt);border-radius:14px;padding:34px 42px;max-width:420px;width:90%;text-align:center;animation:mp 0.4s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;}
+.modal-box::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(192,132,252,0.1) 0%,transparent 60%);pointer-events:none;}
+@keyframes mp{from{transform:scale(0.7);opacity:0}to{transform:scale(1);opacity:1}}
+.m-icon{font-size:46px;margin-bottom:12px;display:block;}
+.m-num{font-size:9px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:6px;}
+.m-titulo{font-family:'Playfair Display',serif;font-size:22px;color:var(--text);margin-bottom:8px;}
+.m-texto{font-size:13px;color:var(--text-dim);font-style:italic;line-height:1.6;margin-bottom:20px;}
+.btn-modal{background:var(--accent-dim);color:var(--text);border:none;padding:11px 26px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
+.btn-modal:hover{background:var(--accent);}
+
+.pie{margin-top:30px;text-align:center;padding-top:16px;border-top:1px solid var(--border);}
+.pie-brand{font-size:10px;letter-spacing:2px;color:var(--text-muted);}
+
+.confetti-p{position:fixed;pointer-events:none;z-index:200;animation:cf 2.5s ease-in forwards;}
+@keyframes cf{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<div class="fb-status"><div class="fb-dot wait" id="fb-dot"></div><span id="fb-lbl">Conectando...</span></div>
+
+<div class="wrap">
+  <div class="cabecera">
+    <div class="eyebrow">Escape Room</div>
+    <div class="titulo-principal">El Laberinto<br>de los Sentimientos</div>
+    <div class="subtitulo">Nueve pruebas. Nueve emociones. Una sola salida.</div>
+    <div class="sep"></div>
+  </div>
+
+  <!-- ESPERA -->
+  <div id="pantalla-espera">
+    <span class="espera-emoji">🎭</span>
+    <div class="espera-titulo">Preparando la experiencia...</div>
+    <div class="espera-texto">El Game Master está configurando el laberinto. Pronto comenzará vuestro viaje a través de los sentimientos.</div>
+    <div class="espera-chip">⏳ Esperando inicio</div>
+    <div class="espera-pts"><div class="espera-pt"></div><div class="espera-pt"></div><div class="espera-pt"></div></div>
+  </div>
+
+  <!-- PAUSA -->
+  <div id="pantalla-pausa">
+    <span class="pausa-emoji">⏸️</span>
+    <div class="pausa-titulo">Tiempo suspendido</div>
+    <div class="pausa-texto">El Game Master ha pausado el juego momentáneamente. Mantened la calma, el laberinto os espera.</div>
+    <div class="pausa-chip">⏸ Juego en pausa</div>
+  </div>
+
+  <!-- JUEGO -->
+  <div id="contenido-juego">
+    <!-- CRONO -->
+    <div class="crono-block">
+      <div class="crono-lbl">⏱ Tiempo restante</div>
+      <div class="crono-display" id="crono-j">45:00</div>
+      <div class="crono-barra"><div class="crono-fill" id="crono-fill"></div></div>
+    </div>
+    <div class="crono-sep"></div>
+
+    <!-- MSG MAESTRO -->
+    <div id="msg-maestro-wrap">
+      <div class="msg-box">
+        <div class="msg-lbl">💬 Mensaje del Game Master</div>
+        <div class="msg-txt" id="msg-txt"></div>
+      </div>
+    </div>
+
+    <!-- BLOQUEO -->
+    <div class="bloqueo-banner" id="bloqueo-banner">
+      <span class="bloqueo-emoji" id="bloqueo-emoji">🔒</span>
+      <div class="bloqueo-titulo">Prueba bloqueada</div>
+      <div class="bloqueo-texto" id="bloqueo-texto">Demasiados intentos fallidos. Espera antes de continuar.</div>
+      <div class="bloqueo-crono" id="bloqueo-crono">1:00</div>
+    </div>
+
+    <!-- PROGRESO -->
+    <div class="prog-block">
+      <div class="prog-lbl">Progreso emocional</div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="prog-count"><span id="count-done">0</span> de 9 pruebas superadas</div>
+    </div>
+
+    <!-- MAPA -->
+    <div class="mapa-prog" id="mapa-prog"></div>
+
+    <!-- PANEL ENTRADA -->
+    <div class="panel-entrada" id="panel-entrada">
+      <div class="panel-header">
+        <div class="panel-titulo" id="panel-titulo"></div>
+        <div class="panel-emoji" id="panel-emoji"></div>
+      </div>
+      <div class="panel-inst" id="panel-inst"></div>
+      <div class="input-fila">
+        <input class="input-code" id="input-code" type="text" maxlength="12" placeholder="· · · · ·" autocomplete="off" autocorrect="off" spellcheck="false"/>
+        <button class="btn-ver" onclick="verificar()">Verificar</button>
+      </div>
+      <div class="feedback" id="feedback"></div>
+      <div class="intentos-info">
+        <span class="intentos-lbl" id="intentos-lbl">Intentos disponibles: 3</span>
+        <div class="intentos-dots" id="intentos-dots">
+          <div class="idot libre"></div>
+          <div class="idot libre"></div>
+          <div class="idot libre"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRID -->
+    <div class="pruebas-grid" id="pruebas-grid"></div>
+
+    <!-- PISTA FINAL -->
+    <div class="pista-final" id="pista-final">
+      <span class="pf-emoji">🎭</span>
+      <div class="pf-lbl">✦ Revelación final ✦</div>
+      <div class="pf-titulo">¡Has atravesado el Laberinto!</div>
+      <div class="pf-texto">Has sentido, comprendido y superado las nueve emociones del laberinto. El corazón del juego te revela su secreto final. Muestra este código al Game Master para completar tu aventura:</div>
+      <div class="pf-codigo" id="pf-codigo">CORAZÓN</div>
+      <div style="margin-top:14px;font-size:11px;color:var(--text-muted);font-style:italic;">✦ Lleva este código al Game Master ✦</div>
+    </div>
+
+    <!-- FIN TIEMPO -->
+    <div id="fin-tiempo">
+      <span class="fin-emoji">⏰</span>
+      <div class="fin-titulo">¡El tiempo ha expirado!</div>
+      <div class="fin-texto">El laberinto ha cerrado sus puertas. Las emociones se han apagado.<br><em>El Game Master decidirá qué ocurre ahora.</em></div>
+    </div>
+  </div>
+
+  <div class="pie"><div class="pie-brand">El Laberinto de los Sentimientos · Escape Room</div></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <span class="m-icon" id="m-icon">✨</span>
+    <div class="m-num" id="m-num">PRUEBA SUPERADA</div>
+    <div class="m-titulo" id="m-titulo"></div>
+    <div class="m-texto" id="m-texto"></div>
+    <button class="btn-modal" onclick="cerrarModal()">Continuar →</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp, getApps, deleteApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ══════════════════════════════════════════════
+// CONFIGURACIÓN DE PRUEBAS — edita aquí las respuestas
+// Para las pruebas 4-9, pon la respuesta que encaje
+// con tu juego físico. Acepta números y letras.
+// ══════════════════════════════════════════════
+const PRUEBAS=[
+  // — PRUEBAS DE CONTAR OBJETOS (1-3) —
+  {
+    id:1,
+    titulo:"El Latido del Amor",
+    emoji:"❤️",
+    tipo:"contar",
+    inst:"Buscad por toda la sala los corazones rojos que están escondidos. Contadlos con cuidado... cada uno cuenta. Introduced el número total.",
+    respuesta:"13", // ← CAMBIA ESTE NÚMERO al total de corazones en tu sala
+    ayuda:"Mirad en las paredes, el suelo y los objetos. Hay corazones de distintos tamaños.",
+    cel:"¡El latido es correcto! El amor ha abierto la primera puerta del laberinto."
+  },
+  {
+    id:2,
+    titulo:"La Alegría Visible",
+    emoji:"😊",
+    tipo:"contar",
+    inst:"Hay caras sonrientes escondidas por la sala. Encontradlas todas y contad cuántas hay en total. Introduced la cantidad.",
+    respuesta:"8", // ← CAMBIA ESTE NÚMERO al total de caras sonrientes en tu sala
+    ayuda:"Las caras pueden ser pegatinas, dibujos o figuras. Buscad en todos los rincones.",
+    cel:"¡La alegría os ilumina! Habéis visto lo que otros no ven."
+  },
+  {
+    id:3,
+    titulo:"Las Lágrimas Perdidas",
+    emoji:"😢",
+    tipo:"contar",
+    inst:"Entre todas las lágrimas de la sala, solo interesan las de color azul. Ignorad las demás. Contad únicamente las azules e introduced la cantidad.",
+    respuesta:"6", // ← CAMBIA ESTE NÚMERO al total de lágrimas azules en tu sala
+    ayuda:"Hay lágrimas de varios colores. Solo contáis las azules.",
+    cel:"Habéis sentido la tristeza sin perderos en ella. La tercera emoción, superada."
+  },
+  // — PRUEBAS DE ACERTIJO / PUZZLE FÍSICO (4-9) —
+  {
+    id:4,
+    titulo:"El Código de la Ira",
+    emoji:"😡",
+    tipo:"acertijo",
+    inst:"En la sala encontraréis un sobre rojo marcado con el símbolo de la llama 🔥. Contiene un mensaje cifrado donde ciertas letras están marcadas en rojo. Leed solo esas letras en orden para formar la palabra clave.",
+    respuesta:"RABIA", // ← CAMBIA por la respuesta de tu puzzle físico
+    ayuda:"Las letras marcadas forman una palabra de 5 letras. Leedlas de izquierda a derecha y de arriba abajo.",
+    cel:"La ira ha sido domada. Habéis canalizado la rabia en sabiduría."
+  },
+  {
+    id:5,
+    titulo:"El Espejo del Miedo",
+    emoji:"😨",
+    tipo:"acertijo",
+    inst:"En algún lugar de la sala hay un espejo con un mensaje oculto. Solo es visible si lo ilumináis con la linterna UV que encontraréis sobre la mesa. Leed el código que aparece.",
+    respuesta:"SOMBRA", // ← CAMBIA por la respuesta de tu puzzle físico
+    ayuda:"El mensaje tiene 6 caracteres. Aseguraos de iluminar todo el espejo.",
+    cel:"Habéis enfrentado vuestro miedo mirándolo directamente a los ojos."
+  },
+  {
+    id:6,
+    titulo:"La Caja de la Sorpresa",
+    emoji:"😲",
+    tipo:"acertijo",
+    inst:"Hay una caja cerrada con 4 candados de colores. Alrededor de la sala hay pistas con los colores correspondientes: rojo, azul, verde y amarillo. Cada pista os da un número. Ordenadlos según el arcoíris.",
+    respuesta:"4726", // ← CAMBIA por la combinación de tu caja
+    ayuda:"El orden es: rojo, azul, verde, amarillo. Un número por color.",
+    cel:"¡La sorpresa ha estallado! Lo inesperado a veces es lo mejor."
+  },
+  {
+    id:7,
+    titulo:"La Melodía de la Calma",
+    emoji:"😌",
+    tipo:"acertijo",
+    inst:"Encontraréis un teclado musical con 8 teclas numeradas del 1 al 8. En el papel azul que hay en la sala aparece una partitura simple. Tocad las notas en el orden indicado y escribid los números de las teclas.",
+    respuesta:"31524", // ← CAMBIA por la secuencia de tu partitura
+    ayuda:"La partitura tiene 5 notas. Anotad el número de cada tecla en orden.",
+    cel:"La calma ha llenado la sala. El silencio también habla."
+  },
+  {
+    id:8,
+    titulo:"El Mapa del Asco",
+    emoji:"🤢",
+    tipo:"acertijo",
+    inst:"Hay un mapa de la sala dibujado en papel verde. Algunas zonas están marcadas con una X. En cada X encontraréis un objeto desagradable... y una letra. Ordenad las letras según los números del mapa.",
+    respuesta:"VERDE", // ← CAMBIA por la palabra que forman tus objetos
+    ayuda:"Hay 5 objetos marcados. Los números del mapa indican el orden de las letras.",
+    cel:"El asco os ha llevado a descubrir lo que estaba oculto. ¡Bien hecho!"
+  },
+  {
+    id:9,
+    titulo:"El Abrazo Final",
+    emoji:"🥰",
+    tipo:"acertijo",
+    inst:"La última prueba. En la sala hay 9 fotografías enmarcadas de distintas personas. Cada foto tiene un número en el reverso. Buscad las 3 fotos donde las personas se abrazan y sumad sus números.",
+    respuesta:"21", // ← CAMBIA por la suma correcta de tus fotos
+    ayuda:"Solo 3 de las 9 fotos muestran abrazos. Sumad los números del reverso.",
+    cel:"El amor lo vence todo. Habéis completado el laberinto de los sentimientos."
+  }
+];
+
+const DURACION = 45 * 60; // ← Cambia a los minutos que quieras (aquí 45 min)
+const SESION = "sentimientos_partida";
+const INTENTOS_MAX = 3;
+const BLOQUEO_SEG = 60;
+
+let db = null, unsubscribe = null;
+let estado = { resueltas: [], prueba_activa: null };
+let intentosActuales = 0, intentosPorPrueba = {};
+let juegoActivo = false, tiempoAgotado = false, pausado = false;
+let tiempoInicio = null, cronoInterval = null;
+let ultimoMsgTs = 0;
+// bloqueo por prueba: { [id]: { restante, timer, activo } }
+let bloqueoPorPrueba = {};
+
+// ── Utilidades ──
+function norm(s){ return s.trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
+function setFb(st){
+  const d=document.getElementById('fb-dot'), l=document.getElementById('fb-lbl');
+  if(st==='ok'){d.className='fb-dot ok';l.textContent='Sincronizado';}
+  else if(st==='err'){d.className='fb-dot err';l.textContent='Sin conexión';}
+  else{d.className='fb-dot wait';l.textContent='Conectando...';}
+}
+
+// ── Firebase ──
+function conectar(cfg){
+  setFb('wait');
+  try{
+    getApps().forEach(a=>deleteApp(a));
+    const app=initializeApp(cfg);
+    db=getFirestore(app);
+    escuchar();
+  }catch(e){setFb('err');console.error(e);}
+}
+async function guardar(data){
+  if(!db)return;
+  try{await setDoc(doc(db,'juego',SESION),data,{merge:true});setFb('ok');}
+  catch(e){setFb('err');}
+}
+function escuchar(){
+  if(!db)return;
+  if(unsubscribe)unsubscribe();
+  unsubscribe=onSnapshot(doc(db,'juego',SESION),snap=>{
+    if(!snap.exists()){setFb('ok');return;}
+    const d=snap.data(); setFb('ok');
+    // Estado del juego
+    const eraActivo=juegoActivo, eraPausado=pausado;
+    juegoActivo=!!d.activo; tiempoAgotado=!!d.tiempo_agotado;
+    pausado=!!d.pausado;
+    estado.resueltas=d.resueltas||[];
+    intentosPorPrueba=d.intentosPorPrueba||{};
+
+    if(d.inicio_ms){
+      tiempoInicio=d.inicio_ms;
+    }else{tiempoInicio=null;}
+
+    // Sincronizar respuestas editadas por el maestro
+    if(d.respuestas){
+      PRUEBAS.forEach(p=>{ if(d.respuestas[p.id]) p.respuesta=d.respuestas[p.id]; });
+    }
+    // Sincronizar código final
+    if(d.codigo_final){
+      document.getElementById('pf-codigo').textContent=d.codigo_final;
+    }
+
+    // Mensaje del maestro
+    const msgTxt=d.mensaje_maestro||'', msgTs=d.mensaje_ts||0;
+    const msgWrap=document.getElementById('msg-maestro-wrap');
+    if(msgTxt){
+      document.getElementById('msg-txt').textContent=msgTxt;
+      msgWrap.classList.add('show');
+      if(msgTs>ultimoMsgTs&&ultimoMsgTs>0)msgWrap.classList.add('nuevo');
+      ultimoMsgTs=msgTs;
+    }else{msgWrap.classList.remove('show','nuevo');}
+
+    render();
+  },e=>{setFb('err');console.error(e);});
+}
+
+// ── Cronómetro jugador ──
+function iniciarCrono(){
+  if(cronoInterval)clearInterval(cronoInterval);
+  cronoInterval=setInterval(()=>{
+    if(!juegoActivo||pausado||tiempoAgotado||!tiempoInicio)return;
+    const elapsed=Math.floor((Date.now()-tiempoInicio)/1000);
+    const left=Math.max(0,DURACION-elapsed);
+    const m=Math.floor(left/60), s=left%60;
+    const disp=document.getElementById('crono-j');
+    disp.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    const pct=left/DURACION;
+    const fill=document.getElementById('crono-fill');
+    fill.style.width=(pct*100)+'%';
+    if(pct<0.15){disp.className='crono-display critico';fill.className='crono-fill critico';}
+    else if(pct<0.3){disp.className='crono-display urgente';fill.className='crono-fill urgente';}
+    else{disp.className='crono-display';fill.className='crono-fill';}
+    if(left===0&&!tiempoAgotado){tiempoAgotado=true;render();}
+  },500);
+}
+
+// ── Render principal ──
+function render(){
+  const espera=document.getElementById('pantalla-espera');
+  const pausa=document.getElementById('pantalla-pausa');
+  const juego=document.getElementById('contenido-juego');
+  const fin=document.getElementById('fin-tiempo');
+
+  if(!juegoActivo&&!tiempoAgotado){
+    espera.style.display='block'; pausa.style.display='none';
+    juego.style.display='none'; clearInterval(cronoInterval);
+    return;
+  }
+  if(juegoActivo&&pausado){
+    espera.style.display='none'; pausa.style.display='block';
+    juego.style.display='none'; return;
+  }
+  espera.style.display='none'; pausa.style.display='none';
+  juego.style.display='block';
+  iniciarCrono();
+
+  if(tiempoAgotado){
+    fin.classList.add('show');
+    document.getElementById('pruebas-grid').style.display='none';
+    document.getElementById('panel-entrada').classList.remove('visible');
+  }else{
+    fin.classList.remove('show');
+    document.getElementById('pruebas-grid').style.display='';
+  }
+
+  renderGrid();
+  renderMapa();
+  renderProgreso();
+  renderFinal();
+}
+
+// ── Grid de pruebas ──
+function renderGrid(){
+  const g=document.getElementById('pruebas-grid'); g.innerHTML='';
+  PRUEBAS.forEach(p=>{
+    const res=estado.resueltas.includes(p.id);
+    const activa=estado.prueba_activa===p.id;
+    const bloq=bloqueoPorPrueba[p.id]?.activo;
+    let cls='pcard';
+    if(res) cls+=' resuelta';
+    else if(activa) cls+=' activa';
+    else if(bloq) cls+=' bloq-activo';
+    if(tiempoAgotado) cls+=' bloqueada';
+    const c=document.createElement('div'); c.className=cls;
+    const tiempoRestante=bloq?bloqueoPorPrueba[p.id].restante:0;
+    const minB=Math.floor(tiempoRestante/60), segB=tiempoRestante%60;
+    c.innerHTML=`<span class="pcard-emoji">${p.emoji}</span>
+      <div class="pcard-num">${String(p.id).padStart(2,'0')}</div>
+      <div class="pcard-title">${p.titulo}</div>
+      ${bloq
+        ? `<div class="pcard-bloq">🔒 ${minB}:${String(segB).padStart(2,'0')}</div>`
+        : `<div class="pcard-tipo">${p.tipo==='contar'?'🔍 Contar':'🧩 Acertijo'}</div>`
+      }`;
+    if(!res&&!tiempoAgotado&&!bloq) c.addEventListener('click',()=>selPrueba(p.id));
+    else if(!res&&!tiempoAgotado&&bloq) c.addEventListener('click',()=>mostrarPanelBloqueado(p));
+    g.appendChild(c);
+  });
+}
+
+function renderMapa(){
+  const m=document.getElementById('mapa-prog'); m.innerHTML='';
+  PRUEBAS.forEach((p,i)=>{
+    const done=estado.resueltas.includes(p.id);
+    const w=document.createElement('div'); w.style.cssText='display:flex;align-items:center;';
+    const pt=document.createElement('div'); pt.className='mapa-pt'+(done?' done':'');
+    pt.textContent=done?'✓':(i+1);
+    w.appendChild(pt);
+    if(i<PRUEBAS.length-1){const ln=document.createElement('div');ln.className='mapa-ln'+(done?' done':'');w.appendChild(ln);}
+    m.appendChild(w);
+  });
+  const wf=document.createElement('div'); wf.style.cssText='display:flex;align-items:center;';
+  const lf=document.createElement('div'); lf.className='mapa-ln'+(estado.resueltas.length===PRUEBAS.length?' done':'');
+  const pf=document.createElement('div'); pf.className='mapa-pt final'+(estado.resueltas.length===PRUEBAS.length?' done':'');
+  pf.textContent='🎭';
+  wf.appendChild(lf); wf.appendChild(pf); m.appendChild(wf);
+}
+
+function renderProgreso(){
+  const n=estado.resueltas.length;
+  document.getElementById('prog-fill').style.width=(n/PRUEBAS.length*100)+'%';
+  document.getElementById('count-done').textContent=n;
+}
+
+function renderFinal(){
+  if(estado.resueltas.length===PRUEBAS.length) document.getElementById('pista-final').classList.add('show');
+  else document.getElementById('pista-final').classList.remove('show');
+}
+
+// ── Selección de prueba ──
+function selPrueba(id){
+  if(bloqueoPorPrueba[id]?.activo) return;
+  estado.prueba_activa=id;
+  // intentos en el ciclo actual (0-2), no el total acumulado
+  intentosActuales=bloqueoPorPrueba[id]?.intentosCiclo||0;
+  const p=PRUEBAS.find(x=>x.id===id);
+  document.getElementById('panel-titulo').textContent=`${p.titulo}`;
+  document.getElementById('panel-emoji').textContent=p.emoji;
+  document.getElementById('panel-inst').innerHTML=`${p.inst}${p.ayuda?`<br><small style="color:var(--text-muted);font-size:10px;margin-top:6px;display:block">💡 ${p.ayuda}</small>`:''}`;
+  const inp=document.getElementById('input-code');
+  inp.value=''; inp.className='input-code';
+  document.getElementById('feedback').textContent='';
+  document.getElementById('feedback').className='feedback';
+  // quitar estado de bloqueo visual del panel
+  document.getElementById('bloqueo-banner').classList.remove('show');
+  actualizarDots(intentosActuales);
+  document.getElementById('panel-entrada').classList.add('visible');
+  setTimeout(()=>document.getElementById('panel-entrada').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+  inp.focus();
+  renderGrid();
+}
+
+// Muestra en el panel que esta prueba está bloqueada
+function mostrarPanelBloqueado(p){
+  estado.prueba_activa=p.id;
+  document.getElementById('panel-titulo').textContent=p.titulo;
+  document.getElementById('panel-emoji').textContent=p.emoji;
+  document.getElementById('panel-inst').innerHTML=`${p.inst}`;
+  document.getElementById('input-code').value='';
+  document.getElementById('input-code').className='input-code';
+  document.getElementById('feedback').textContent='';
+  document.getElementById('panel-entrada').classList.add('visible');
+  // Mostrar banner de bloqueo con cuenta atrás de esta prueba
+  const bloq=bloqueoPorPrueba[p.id];
+  if(bloq){
+    document.getElementById('bloqueo-emoji').textContent=p.emoji;
+    document.getElementById('bloqueo-texto').textContent=`Habéis fallado ${INTENTOS_MAX} veces en "${p.titulo}". Espera para intentarlo de nuevo.`;
+    actualizarCuentaBloq(p.id);
+    document.getElementById('bloqueo-banner').classList.add('show');
+  }
+  setTimeout(()=>document.getElementById('panel-entrada').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+  renderGrid();
+}
+
+function actualizarDots(usados){
+  const dots=document.getElementById('intentos-dots');
+  dots.innerHTML='';
+  for(let i=0;i<INTENTOS_MAX;i++){
+    const d=document.createElement('div');
+    d.className='idot '+(i<usados?'usado':'libre');
+    dots.appendChild(d);
+  }
+  const restantes=INTENTOS_MAX-usados;
+  document.getElementById('intentos-lbl').textContent=`Intentos restantes: ${Math.max(0,restantes)}`;
+}
+
+// ── Verificar respuesta ──
+window.verificar=async function(){
+  const p=PRUEBAS.find(x=>x.id===estado.prueba_activa); if(!p)return;
+  if(bloqueoPorPrueba[p.id]?.activo) return;
+
+  const inp=document.getElementById('input-code');
+  const val=norm(inp.value);
+  const ok=norm(p.respuesta);
+
+  intentosActuales++;
+  // Guardar intentosCiclo en el objeto de bloqueo
+  if(!bloqueoPorPrueba[p.id]) bloqueoPorPrueba[p.id]={activo:false,restante:0,timer:null,intentosCiclo:0};
+  bloqueoPorPrueba[p.id].intentosCiclo=intentosActuales;
+
+  intentosPorPrueba[p.id]=(intentosPorPrueba[p.id]||0)+1;
+  actualizarDots(intentosActuales);
+  await guardar({intentosPorPrueba});
+
+  if(val===ok){
+    inp.className='input-code correcto';
+    document.getElementById('feedback').textContent='✓ ¡Correcto! Emoción superada...';
+    document.getElementById('feedback').className='feedback ok';
+    setTimeout(async()=>{
+      estado.resueltas.push(p.id); estado.prueba_activa=null;
+      delete bloqueoPorPrueba[p.id];
+      await guardar({resueltas:estado.resueltas,total_resueltas:estado.resueltas.length,intentosPorPrueba});
+      document.getElementById('panel-entrada').classList.remove('visible');
+      document.getElementById('bloqueo-banner').classList.remove('show');
+      render(); abrirModal(p); confetti();
+    },700);
+  }else{
+    inp.className='input-code error';
+    setTimeout(()=>{inp.className='input-code';},500);
+    const msgs=[
+      '✗ No es correcto. Revisad la sala con calma.',
+      '✗ Incorrecto. Volved a leer las instrucciones.',
+      '✗ Aún no. Observad los detalles con atención.'
+    ];
+    document.getElementById('feedback').textContent=msgs[Math.min(intentosActuales-1,msgs.length-1)];
+    document.getElementById('feedback').className='feedback fail';
+
+    if(intentosActuales>=INTENTOS_MAX){
+      activarBloqueoPrueba(p);
+    }
+  }
+};
+
+// ── Sistema de bloqueo por prueba ──
+function activarBloqueoPrueba(p){
+  if(!bloqueoPorPrueba[p.id]) bloqueoPorPrueba[p.id]={activo:false,restante:0,timer:null,intentosCiclo:0};
+  const b=bloqueoPorPrueba[p.id];
+  if(b.timer) clearInterval(b.timer);
+  b.activo=true;
+  b.restante=BLOQUEO_SEG;
+  b.intentosCiclo=0;
+
+  // Si esta prueba es la activa, mostrar banner
+  if(estado.prueba_activa===p.id){
+    document.getElementById('panel-entrada').classList.remove('visible');
+    document.getElementById('bloqueo-emoji').textContent=p.emoji;
+    document.getElementById('bloqueo-texto').textContent=`Habéis fallado ${INTENTOS_MAX} veces en "${p.titulo}". Espera para intentarlo de nuevo.`;
+    actualizarCuentaBloq(p.id);
+    document.getElementById('bloqueo-banner').classList.add('show');
+  }
+
+  renderGrid(); // actualiza la card con el candado
+
+  b.timer=setInterval(()=>{
+    b.restante--;
+    // actualizar display si es la prueba activa
+    if(estado.prueba_activa===p.id) actualizarCuentaBloq(p.id);
+    renderGrid(); // actualiza el contador en la card
+    if(b.restante<=0){
+      clearInterval(b.timer);
+      b.activo=false;
+      b.intentosCiclo=0;
+      // si es la activa, cerrar banner y reabrir panel
+      if(estado.prueba_activa===p.id){
+        document.getElementById('bloqueo-banner').classList.remove('show');
+        selPrueba(p.id);
+      }
+      renderGrid();
+    }
+  },1000);
+}
+
+function actualizarCuentaBloq(id){
+  const b=bloqueoPorPrueba[id];
+  if(!b)return;
+  const m=Math.floor(b.restante/60), s=b.restante%60;
+  document.getElementById('bloqueo-crono').textContent=`${m}:${String(s).padStart(2,'0')}`;
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&estado.prueba_activa&&!bloqueoPorPrueba[estado.prueba_activa]?.activo) window.verificar();
+});
+
+// ── Modal ──
+function abrirModal(p){
+  const todas=estado.resueltas.length===PRUEBAS.length;
+  document.getElementById('m-icon').textContent=todas?'🎭':p.emoji;
+  document.getElementById('m-num').textContent=todas?'¡LABERINTO COMPLETADO!':`PRUEBA ${p.id} DE 9 SUPERADA`;
+  document.getElementById('m-titulo').textContent=todas?'¡Has sentido todo!':p.titulo;
+  document.getElementById('m-texto').textContent=todas?'Has atravesado las nueve emociones del laberinto. Eres libre.':p.cel;
+  document.getElementById('modal').classList.add('show');
+}
+window.cerrarModal=function(){document.getElementById('modal').classList.remove('show');};
+
+// ── Confetti ──
+function confetti(){
+  const cols=['#e84393','#f5c842','#4a90d9','#c084fc','#22c55e','#e84a1a','#00c4a7'];
+  for(let i=0;i<30;i++){setTimeout(()=>{
+    const c=document.createElement('div'); c.className='confetti-p';
+    c.style.cssText=`left:${Math.random()*100}vw;top:-10px;background:${cols[Math.floor(Math.random()*cols.length)]};border-radius:${Math.random()>.5?'50%':'3px'};width:${6+Math.random()*7}px;height:${6+Math.random()*7}px;animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*0.5}s;`;
+    document.body.appendChild(c); setTimeout(()=>c.remove(),3000);
+  },i*45);}
+}
+
+// ── Arranque ──
+conectar({
+  apiKey:"AIzaSyD6WPMALoBWUPPYAkbT0MXkeUtT6tVT7F0",
+  authDomain:"escaperoomprueba.firebaseapp.com",
+  projectId:"escaperoomprueba",
+  storageBucket:"escaperoomprueba.appspot.com",
+  messagingSenderId:"370330539854",
+  appId:"1:370330539854:web:0bb275c4e1a4b1fdb8301f"
+});
+</script>
+</body>
+</html>

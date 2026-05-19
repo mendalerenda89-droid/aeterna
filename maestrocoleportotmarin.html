@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Game Master — El Laberinto de los Sentimientos</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=Abril+Fatface&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080810;
+  --bg2:#0f0f1a;
+  --bg3:#161625;
+  --border:#252538;
+  --border-lt:#35355a;
+  --gold:#c084fc;
+  --gold-dim:#5b21b6;
+  --text:#e2dff0;
+  --text-dim:#8888b0;
+  --text-muted:#444466;
+  --green:#22c55e;
+  --green-lt:#16a34a;
+  --green-dim:rgba(34,197,94,0.15);
+  --red:#ef4444;
+  --red-lt:#dc2626;
+  --red-dim:rgba(239,68,68,0.1);
+  --amber:#f59e0b;
+  --amber-lt:#d97706;
+  --amber-dim:rgba(245,158,11,0.1);
+  --love:#e84393;
+  --joy:#f5c842;
+  --accent:#c084fc;
+  --accent-dim:#5b21b6;
+  --surprise:#00c4a7;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 10% 10%,rgba(192,132,252,0.05) 0%,transparent 45%),radial-gradient(ellipse at 90% 90%,rgba(232,67,147,0.04) 0%,transparent 45%);pointer-events:none;}
+
+/* HEADER */
+header{background:var(--bg2);border-bottom:1px solid var(--border);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:50;}
+.h-brand{display:flex;align-items:center;gap:12px;}
+.h-brand .eyebrow{font-size:8px;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase;}
+.h-brand .titulo{font-family:'Abril Fatface',serif;font-size:clamp(14px,2vw,22px);background:linear-gradient(135deg,var(--love),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.h-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.conn-badge{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);padding:5px 12px;border-radius:20px;}
+.conn-dot{width:7px;height:7px;border-radius:50%;background:#333;transition:all 0.4s;}
+.conn-dot.ok{background:var(--green);box-shadow:0 0 6px var(--green);}
+.conn-dot.err{background:var(--red);}
+.conn-dot.wait{background:var(--amber);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.conn-text{font-size:9px;letter-spacing:1px;color:var(--text-dim);}
+.live-ind{display:none;align-items:center;gap:5px;font-size:9px;letter-spacing:2px;color:var(--green);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:lp 1.5s ease-in-out infinite;}
+@keyframes lp{0%,100%{transform:scale(1)}50%{transform:scale(1.5);opacity:0.5}}
+.btn-sm{background:none;border:1px solid var(--border);color:var(--text-muted);font-size:9px;letter-spacing:1px;padding:5px 10px;cursor:pointer;border-radius:4px;transition:all 0.2s;}
+.btn-sm:hover{border-color:var(--accent-dim);color:var(--accent);}
+
+/* MAIN */
+main{padding:20px 20px 50px;max-width:1200px;margin:0 auto;}
+
+/* SECCIÓN */
+.sec{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:16px;}
+.sec-title{font-size:9px;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* BANNER FINAL */
+.final-banner{display:none;background:rgba(232,67,147,0.08);border:2px solid var(--love);border-radius:10px;padding:20px;margin-bottom:16px;text-align:center;}
+.final-banner.show{display:block;animation:fb 0.8s ease;}
+@keyframes fb{from{opacity:0;transform:scale(0.97)}to{opacity:1;transform:none}}
+.final-titulo{font-family:'Abril Fatface',serif;font-size:clamp(18px,3vw,30px);background:linear-gradient(135deg,var(--love),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.final-texto{font-size:13px;color:var(--text-dim);font-style:italic;}
+
+/* CRONO */
+.crono-grid{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start;}
+@media(max-width:640px){.crono-grid{grid-template-columns:1fr;}}
+.crono-lbl{font-size:9px;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px;}
+.crono-display{font-family:'Abril Fatface',serif;font-size:clamp(52px,9vw,88px);color:var(--text);letter-spacing:4px;line-height:1;transition:color 0.4s;}
+.crono-display.urgente{color:var(--amber);animation:cu 1s ease-in-out infinite;}
+.crono-display.critico{color:var(--red);animation:cc 0.5s ease-in-out infinite;}
+@keyframes cu{0%,100%{opacity:1}50%{opacity:0.55}}
+@keyframes cc{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.7;transform:scale(1.03)}}
+.crono-barra{height:6px;background:var(--bg3);border-radius:3px;margin-top:10px;overflow:hidden;}
+.crono-fill{height:100%;width:100%;background:linear-gradient(90deg,var(--surprise),var(--accent));transition:width 1s linear,background 0.5s;border-radius:3px;}
+.crono-fill.urgente{background:linear-gradient(90deg,var(--amber),var(--red));}
+.crono-fill.critico{background:var(--red);}
+.crono-right{display:flex;flex-direction:column;gap:8px;min-width:210px;}
+.estado-badge{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:8px 16px;border:1px solid var(--border);color:var(--text-dim);text-align:center;border-radius:6px;width:100%;}
+.estado-badge.activo{border-color:var(--green-lt);color:var(--green);background:var(--green-dim);}
+.estado-badge.agotado{border-color:var(--red-lt);color:var(--red);background:var(--red-dim);}
+.estado-badge.urgente-b{border-color:var(--amber-lt);color:var(--amber);}
+.btn-group{display:flex;gap:6px;flex-wrap:wrap;}
+.btn-m{font-size:11px;letter-spacing:1px;padding:9px 15px;cursor:pointer;border:none;border-radius:6px;transition:all 0.2s;font-family:'DM Sans',sans-serif;font-weight:500;}
+.btn-iniciar{background:var(--green-lt);color:#fff;}
+.btn-iniciar:hover:not(:disabled){background:var(--green);}
+.btn-iniciar:disabled{opacity:0.35;cursor:not-allowed;}
+.btn-danger{background:none;border:1px solid var(--border);color:var(--text-muted);}
+.btn-danger:hover{border-color:var(--red-lt);color:var(--red);}
+.btn-pausa{background:var(--amber-lt);color:#fff;}
+.btn-pausa:hover:not(:disabled){background:var(--amber);}
+.btn-pausa.pausado{background:var(--green-lt);color:#fff;}
+.btn-pausa:disabled{opacity:0.35;cursor:not-allowed;}
+.pausa-label{font-size:9px;letter-spacing:1px;color:var(--text-muted);text-align:center;margin-top:2px;min-height:14px;}
+
+/* AJUSTE TIEMPO */
+.tiempo-ajuste{border-top:1px solid var(--border);padding-top:10px;width:100%;}
+.tiempo-label{font-size:8px;letter-spacing:2px;color:var(--text-muted);text-align:center;margin-bottom:7px;text-transform:uppercase;}
+.tiempo-btns{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;}
+.btn-t{font-size:11px;padding:6px 10px;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--text-dim);transition:all 0.2s;min-width:44px;text-align:center;border-radius:4px;font-family:'DM Sans',sans-serif;}
+.btn-t.suma{border-color:var(--green-lt);color:var(--green);}
+.btn-t.suma:hover:not(:disabled){background:var(--green-dim);}
+.btn-t.resta{border-color:var(--red-lt);color:var(--red);}
+.btn-t.resta:hover:not(:disabled){background:var(--red-dim);}
+.btn-t:disabled{opacity:0.3;cursor:not-allowed;}
+
+/* MENSAJES */
+.msg-presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.btn-preset{font-size:12px;background:var(--bg3);border:1px solid var(--border);color:var(--text-dim);padding:5px 11px;cursor:pointer;transition:all 0.2s;border-radius:4px;font-style:italic;}
+.btn-preset:hover{border-color:var(--accent-dim);color:var(--accent);}
+.msg-fila{display:flex;gap:7px;}
+.msg-input{flex:1;background:var(--bg3);border:1px solid var(--border-lt);padding:10px 13px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;border-radius:6px;transition:border-color 0.2s;}
+.msg-input:focus{border-color:var(--accent-dim);}
+.msg-input::placeholder{color:var(--text-muted);}
+.btn-enviar{background:var(--accent-dim);color:var(--text);border:none;padding:10px 16px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:11px;cursor:pointer;flex-shrink:0;transition:all 0.2s;}
+.btn-enviar:hover{background:var(--accent);}
+.btn-borrar{background:none;border:1px solid var(--border);color:var(--text-muted);padding:10px 11px;font-size:13px;cursor:pointer;flex-shrink:0;transition:all 0.2s;border-radius:6px;}
+.btn-borrar:hover{border-color:var(--red);color:var(--red);}
+.msg-ok{margin-top:6px;font-size:11px;color:var(--green);font-style:italic;height:16px;opacity:0;transition:opacity 0.3s;}
+.msg-ok.show{opacity:1;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+@media(max-width:680px){.stats-row{grid-template-columns:1fr 1fr;}}
+.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px 15px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--border-lt);}
+.stat-card.v::before{background:var(--green);}
+.stat-card.r::before{background:var(--red);}
+.stat-card.a::before{background:var(--amber);}
+.stat-card.p::before{background:var(--accent);}
+.stat-lbl{font-size:8px;letter-spacing:2px;color:var(--text-muted);margin-bottom:5px;text-transform:uppercase;}
+.stat-val{font-family:'Abril Fatface',serif;font-size:clamp(28px,3.5vw,42px);line-height:1;color:var(--text);}
+.stat-card.v .stat-val{color:var(--green);}
+.stat-card.r .stat-val{color:var(--red);}
+.stat-card.a .stat-val{color:var(--amber);}
+.stat-card.p .stat-val{color:var(--accent);}
+.stat-sub{font-size:10px;color:var(--text-muted);margin-top:3px;font-style:italic;}
+
+/* PROGRESO */
+.prog-track{height:10px;background:var(--bg3);border-radius:5px;overflow:hidden;margin-bottom:8px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--love),var(--accent),var(--joy));width:0%;transition:width 1s cubic-bezier(.4,0,.2,1);border-radius:5px;}
+.prog-pts{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;margin-top:4px;}
+.prog-pt{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-muted);transition:all 0.4s;cursor:default;position:relative;}
+.prog-pt[title]:hover::after{content:attr(title);position:absolute;bottom:calc(100%+5px);left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--border);color:var(--text);font-size:10px;padding:3px 8px;white-space:nowrap;z-index:10;border-radius:4px;}
+.prog-pt.done{background:var(--accent-dim);border-color:var(--accent);color:var(--text);box-shadow:0 0 8px rgba(192,132,252,0.4);}
+.prog-pt.final{width:34px;height:34px;font-size:16px;border-color:var(--love);color:var(--love);}
+.prog-pt.final.done{background:var(--love-dim,#6b1a35);border-color:var(--love);color:var(--text);box-shadow:0 0 12px rgba(232,67,147,0.5);}
+
+/* TABLA */
+.tabla-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:520px;}
+thead th{background:var(--bg3);border-bottom:1px solid var(--border);font-size:8px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;padding:9px 12px;text-align:left;}
+tbody tr{border-bottom:1px solid rgba(37,37,56,0.7);transition:background 0.2s;}
+tbody tr:hover{background:rgba(192,132,252,0.03);}
+tbody td{padding:11px 12px;font-size:13px;vertical-align:middle;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;font-size:9px;letter-spacing:1px;border-radius:20px;}
+.badge.ok{background:var(--green-dim);border:1px solid var(--green-lt);color:var(--green);}
+.badge.pen{background:var(--amber-dim);border:1px solid var(--amber-lt);color:var(--amber);}
+.badge.lck{background:var(--bg3);border:1px solid var(--border);color:var(--text-muted);}
+.dot-bar{display:flex;gap:3px;align-items:center;}
+.idot{width:8px;height:8px;border-radius:2px;background:var(--border);}
+.idot.f{background:var(--red);}
+.idot.ok{background:var(--green);}
+.resp-badge{display:inline-block;font-size:11px;letter-spacing:2px;padding:3px 9px;background:rgba(192,132,252,0.1);border:1px solid var(--accent-dim);color:var(--accent);border-radius:4px;font-family:'Abril Fatface',serif;}
+
+/* EDITAR RESPUESTAS */
+.edit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(max-width:680px){.edit-grid{grid-template-columns:1fr;}}
+.edit-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;}
+.edit-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.edit-emoji{font-size:20px;}
+.edit-titulo{font-family:'Playfair Display',serif;font-size:13px;color:var(--text);}
+.edit-num{font-size:9px;letter-spacing:1px;color:var(--text-muted);}
+.edit-input{width:100%;background:var(--bg);border:1px solid var(--border-lt);padding:8px 11px;font-family:'Abril Fatface',serif;font-size:16px;color:var(--text);letter-spacing:3px;text-transform:uppercase;outline:none;border-radius:5px;transition:border-color 0.2s;text-align:center;}
+.edit-input:focus{border-color:var(--accent-dim);}
+textarea.edit-input{letter-spacing:1px;text-transform:none;text-align:left;font-family:'DM Sans',sans-serif;font-size:15px;resize:vertical;line-height:1.6;}
+.edit-nota{font-size:10px;color:var(--text-muted);font-style:italic;margin-top:5px;}
+.btn-guardar-resp{width:100%;margin-top:14px;background:var(--accent-dim);color:var(--text);border:none;padding:10px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
+.btn-guardar-resp:hover{background:var(--accent);}
+.edit-ok{text-align:center;font-size:11px;color:var(--green);font-style:italic;margin-top:6px;height:16px;opacity:0;transition:opacity 0.3s;}
+.edit-ok.show{opacity:1;}
+
+/* LOG */
+.log-wrap{background:var(--bg3);border-radius:8px;}
+.log-hdr{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);}
+.log-list{max-height:200px;overflow-y:auto;padding:4px 0;}
+.log-list::-webkit-scrollbar{width:2px;}
+.log-list::-webkit-scrollbar-thumb{background:var(--border);}
+.log-item{display:flex;align-items:flex-start;gap:8px;padding:6px 14px;border-bottom:1px solid rgba(37,37,56,0.5);animation:li 0.3s ease;}
+@keyframes li{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:none}}
+.ldot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+.ldot.ok{background:var(--green);}
+.ldot.fail{background:var(--red);}
+.ldot.info{background:var(--accent);}
+.ltext{font-size:12px;color:var(--text-dim);line-height:1.4;flex:1;}
+.ltext strong{color:var(--text);}
+.lhora{font-size:9px;color:var(--text-muted);flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-brand">
+    <div>
+      <div class="eyebrow">Panel Game Master</div>
+      <div class="titulo">🎭 El Laberinto de los Sentimientos</div>
+    </div>
+  </div>
+  <div class="h-right">
+    <div class="live-ind" id="live-ind"><div class="live-dot"></div> EN VIVO</div>
+    <div class="conn-badge"><div class="conn-dot wait" id="conn-dot"></div><span class="conn-text" id="conn-text">Conectando...</span></div>
+    <button class="btn-sm" onclick="location.reload()">↺ Reconectar</button>
+  </div>
+</header>
+
+<main>
+  <!-- BANNER FINAL -->
+  <div class="final-banner" id="final-banner">
+    <div class="final-titulo">🎭 ¡LABERINTO COMPLETADO! 🎭</div>
+    <div class="final-texto">El grupo ha superado las 9 pruebas emocionales. ¡Enhorabuena!</div>
+  </div>
+
+  <!-- CRONO -->
+  <div class="sec">
+    <div class="sec-title">⏱ Cronómetro de partida</div>
+    <div class="crono-grid">
+      <div>
+        <div class="crono-lbl">Tiempo restante</div>
+        <div class="crono-display" id="crono-m">45:00</div>
+        <div class="crono-barra"><div class="crono-fill" id="crono-fill"></div></div>
+      </div>
+      <div class="crono-right">
+        <div class="crono-lbl" style="text-align:center">Estado</div>
+        <span class="estado-badge" id="estado-badge">⏸ Sin iniciar</span>
+        <div class="btn-group">
+          <button class="btn-m btn-iniciar" id="btn-iniciar" onclick="iniciarPartida()">▶ Iniciar</button>
+          <button class="btn-m btn-pausa" id="btn-pausa" onclick="pausarReanudar()" disabled>⏸ Pausar</button>
+          <button class="btn-m btn-danger" onclick="resetearPartida()">↺ Reset</button>
+        </div>
+        <div class="pausa-label" id="pausa-label"></div>
+        <div class="tiempo-ajuste">
+          <div class="tiempo-label">Ajustar tiempo</div>
+          <div class="tiempo-btns">
+            <button class="btn-t suma" id="bt5" onclick="ajustarTiempo(5)" disabled>+5'</button>
+            <button class="btn-t suma" id="bt2" onclick="ajustarTiempo(2)" disabled>+2'</button>
+            <button class="btn-t suma" id="bt1" onclick="ajustarTiempo(1)" disabled>+1'</button>
+            <button class="btn-t resta" id="bm1" onclick="ajustarTiempo(-1)" disabled>−1'</button>
+            <button class="btn-t resta" id="bm2" onclick="ajustarTiempo(-2)" disabled>−2'</button>
+            <button class="btn-t resta" id="bm5" onclick="ajustarTiempo(-5)" disabled>−5'</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDITAR RESPUESTAS -->
+  <div class="sec">
+    <div class="sec-title">✏️ Configurar respuestas de las pruebas</div>
+    <div class="edit-grid" id="edit-grid"></div>
+    <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button class="btn-guardar-resp" style="width:auto;padding:10px 22px;" onclick="guardarRespuestas()">💾 Guardar todas las respuestas</button>
+      <div class="edit-ok" id="edit-ok">✓ Respuestas guardadas en Firebase</div>
+    </div>
+    <div style="margin-top:8px;font-size:11px;color:var(--text-muted);font-style:italic;">Las respuestas se sincronizan automáticamente con la tablet del jugador. Puedes cambiarlas en cualquier momento.</div>
+  </div>
+
+  <!-- MENSAJES -->
+  <div class="sec">
+    <div class="sec-title">💬 Enviar mensaje / pista al jugador</div>
+    <div class="msg-presets">
+      <button class="btn-preset" onclick="preset('¡Os queda poco tiempo! Concentraos.')">⚠ Urgencia</button>
+      <button class="btn-preset" onclick="preset('Muy bien, seguid así. Confiad en vosotros.')">💪 Ánimo</button>
+      <button class="btn-preset" onclick="preset('Prestad atención a los colores de la sala.')">🎨 Pista colores</button>
+      <button class="btn-preset" onclick="preset('La respuesta es un número de 2 cifras.')">🔢 Pista número</button>
+      <button class="btn-preset" onclick="preset('Buscad en la parte de arriba de la sala.')">🔍 Pista ubicación</button>
+      <button class="btn-preset" onclick="preset('La respuesta tiene exactamente 4 letras.')">✏️ Pista longitud</button>
+    </div>
+    <div class="msg-fila">
+      <input class="msg-input" id="msg-input" type="text" maxlength="140" placeholder="Escribe una pista o mensaje para el jugador..."/>
+      <button class="btn-enviar" onclick="enviarMsg()">Enviar →</button>
+      <button class="btn-borrar" onclick="borrarMsg()" title="Borrar mensaje del jugador">✕</button>
+    </div>
+    <div class="msg-ok" id="msg-ok">✓ Mensaje enviado al jugador</div>
+  </div>
+
+  <!-- STATS -->
+  <div class="sec">
+    <div class="sec-title">📊 Estadísticas de partida</div>
+    <div class="stats-row">
+      <div class="stat-card v"><div class="stat-lbl">Superadas</div><div class="stat-val" id="s-ok">0</div><div class="stat-sub">de 9 pruebas</div></div>
+      <div class="stat-card r"><div class="stat-lbl">Pendientes</div><div class="stat-val" id="s-pend">9</div><div class="stat-sub">por resolver</div></div>
+      <div class="stat-card a"><div class="stat-lbl">Fallos</div><div class="stat-val" id="s-fallos">0</div><div class="stat-sub">intentos fallidos</div></div>
+      <div class="stat-card p"><div class="stat-lbl">Progreso</div><div class="stat-val" id="s-pct">0%</div><div class="stat-sub">completado</div></div>
+    </div>
+    <div style="margin-top:12px;">
+      <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="prog-pts" id="prog-pts"></div>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="sec">
+    <div class="sec-title">🎭 Detalle de cada prueba</div>
+    <div class="tabla-wrap">
+      <table>
+        <thead><tr>
+          <th>#</th><th></th><th>Prueba</th><th>Tipo</th>
+          <th>Estado</th><th style="color:var(--accent)">Solución</th>
+          <th>Intentos</th>
+        </tr></thead>
+        <tbody id="tabla-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div class="sec">
+    <div class="sec-title">⏱ Actividad en tiempo real</div>
+    <div class="log-wrap">
+      <div class="log-hdr">
+        <span style="font-size:11px;color:var(--text-dim);">Últimas acciones del jugador</span>
+        <button class="btn-sm" onclick="limpiarLog()">Limpiar</button>
+      </div>
+      <div class="log-list" id="log-list">
+        <div class="log-item"><div class="ldot info"></div><div class="ltext">Panel Game Master iniciado.</div><div class="lhora" id="hora-ini"></div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import { initializeApp, getApps, deleteApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, onSnapshot, setDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ══════════════════════════════════════════════
+// PRUEBAS — edita las respuestas aquí O en el
+// panel "Configurar respuestas" de la interfaz
+// ══════════════════════════════════════════════
+const PRUEBAS=[
+  {id:1,titulo:"El Latido del Amor",emoji:"❤️",tipo:"contar",respuesta:"13"},
+  {id:2,titulo:"La Alegría Visible",emoji:"😊",tipo:"contar",respuesta:"8"},
+  {id:3,titulo:"Las Lágrimas Perdidas",emoji:"😢",tipo:"contar",respuesta:"6"},
+  {id:4,titulo:"El Código de la Ira",emoji:"😡",tipo:"acertijo",respuesta:"RABIA"},
+  {id:5,titulo:"El Espejo del Miedo",emoji:"😨",tipo:"acertijo",respuesta:"SOMBRA"},
+  {id:6,titulo:"La Caja de la Sorpresa",emoji:"😲",tipo:"acertijo",respuesta:"4726"},
+  {id:7,titulo:"La Melodía de la Calma",emoji:"😌",tipo:"acertijo",respuesta:"31524"},
+  {id:8,titulo:"El Mapa del Asco",emoji:"🤢",tipo:"acertijo",respuesta:"VERDE"},
+  {id:9,titulo:"El Abrazo Final",emoji:"🥰",tipo:"acertijo",respuesta:"21"}
+];
+
+let codigoFinal = "CORAZÓN"; // ← código que ven los jugadores al completar las 9 pruebas
+
+const DURACION = 45 * 60;
+const SESION = "sentimientos_partida";
+
+let db=null, unsubscribe=null;
+let tiempoInicio=null, juegoActivo=false, tiempoAgotado=false, pausado=false;
+let cronoInterval=null, pausaTs=null, tiempoAcumuladoPausa=0;
+let ultimoEstado={resueltas:[],intentosPorPrueba:{}};
+let respuestasEditadas={};
+
+// Copiar respuestas al objeto editable
+PRUEBAS.forEach(p=>{ respuestasEditadas[p.id]=p.respuesta; });
+
+function hora(){ return new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+function norm(s){ return s.trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
+
+// ── Firebase ──
+function conectar(cfg){
+  setConn('wait');
+  try{
+    getApps().forEach(a=>deleteApp(a));
+    const app=initializeApp(cfg);
+    db=getFirestore(app);
+    escuchar();
+  }catch(e){setConn('err');console.error(e);}
+}
+async function guardar(data){
+  if(!db)return;
+  try{await setDoc(doc(db,'juego',SESION),data,{merge:true});setConn('ok');}
+  catch(e){setConn('err');}
+}
+function escuchar(){
+  if(!db)return;
+  if(unsubscribe)unsubscribe();
+  unsubscribe=onSnapshot(doc(db,'juego',SESION),snap=>{
+    setConn('ok');
+    if(!snap.exists()){renderMaestro({resueltas:[],intentosPorPrueba:{}});return;}
+    const d=snap.data();
+    juegoActivo=!!d.activo; tiempoAgotado=!!d.tiempo_agotado; pausado=!!d.pausado;
+    if(d.inicio_ms) tiempoInicio=d.inicio_ms;
+    else tiempoInicio=null;
+    // Sincronizar respuestas si vienen de Firebase
+    if(d.respuestas){
+      Object.assign(respuestasEditadas,d.respuestas);
+      PRUEBAS.forEach(p=>{ if(d.respuestas[p.id]) p.respuesta=d.respuestas[p.id]; });
+      renderEditCards();
+    }
+    if(d.codigo_final){ codigoFinal=d.codigo_final; renderEditCards(); }
+    detectarCambios(d);
+    renderMaestro(d);
+    actualizarControles();
+  },e=>{setConn('err');console.error(e);});
+}
+
+// ── Crono maestro ──
+function iniciarCronoM(){
+  if(cronoInterval)clearInterval(cronoInterval);
+  cronoInterval=setInterval(()=>{
+    if(!juegoActivo||pausado||tiempoAgotado||!tiempoInicio)return;
+    const elapsed=Math.floor((Date.now()-tiempoInicio)/1000);
+    const left=Math.max(0,DURACION-elapsed);
+    const m=Math.floor(left/60),s=left%60;
+    const disp=document.getElementById('crono-m');
+    disp.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    const pct=left/DURACION;
+    const fill=document.getElementById('crono-fill');
+    fill.style.width=(pct*100)+'%';
+    if(pct<0.15){disp.className='crono-display critico';fill.className='crono-fill critico';}
+    else if(pct<0.3){disp.className='crono-display urgente';fill.className='crono-fill urgente';}
+    else{disp.className='crono-display';fill.className='crono-fill';}
+    if(left===0&&!tiempoAgotado){guardar({tiempo_agotado:true});}
+  },500);
+}
+
+// ── Controles ──
+window.iniciarPartida=async function(){
+  if(!db){alert('Firebase no conectado.');return;}
+  const ts=Date.now();
+  tiempoInicio=ts; juegoActivo=true; pausado=false; tiempoAgotado=false;
+  await guardar({activo:true,pausado:false,tiempo_agotado:false,inicio_ms:ts,resueltas:[],intentosPorPrueba:{},total_resueltas:0,mensaje_maestro:'',mensaje_ts:0});
+  iniciarCronoM();
+  actualizarControles();
+  addLog('info','<strong>Partida iniciada</strong> por el Game Master.');
+};
+
+window.pausarReanudar=async function(){
+  if(!juegoActivo)return;
+  pausado=!pausado;
+  await guardar({pausado});
+  actualizarControles();
+  addLog('info',pausado?'Juego <strong>pausado</strong>.':'Juego <strong>reanudado</strong>.');
+};
+
+window.ajustarTiempo=async function(min){
+  if(!juegoActivo||!tiempoInicio)return;
+  tiempoInicio+=min*60*1000;
+  await guardar({inicio_ms:tiempoInicio});
+  addLog('info',`Tiempo ajustado: <strong>${min>0?'+':''}${min} minuto(s)</strong>.`);
+};
+
+window.resetearPartida=async function(){
+  if(!db){alert('Firebase no conectado.');return;}
+  if(!confirm('¿Resetear la partida? El jugador volverá a la pantalla de espera.'))return;
+  if(cronoInterval)clearInterval(cronoInterval);
+  juegoActivo=false; tiempoAgotado=false; tiempoInicio=null; pausado=false;
+  document.getElementById('crono-m').textContent='45:00';
+  document.getElementById('crono-m').className='crono-display';
+  document.getElementById('crono-fill').style.width='100%';
+  document.getElementById('crono-fill').className='crono-fill';
+  actualizarControles();
+  await guardar({activo:false,pausado:false,tiempo_agotado:false,inicio_ms:null,resueltas:[],intentosPorPrueba:{},total_resueltas:0,mensaje_maestro:'',mensaje_ts:0});
+  addLog('info','<strong>Partida reiniciada</strong>.');
+};
+
+function actualizarControles(){
+  const badge=document.getElementById('estado-badge');
+  const btnI=document.getElementById('btn-iniciar');
+  const btnP=document.getElementById('btn-pausa');
+  const tBtns=['bt5','bt2','bt1','bm1','bm2','bm5'];
+  if(!juegoActivo){
+    badge.className='estado-badge'; badge.textContent='⏸ Sin iniciar';
+    btnI.disabled=false; btnP.disabled=true;
+    tBtns.forEach(id=>document.getElementById(id).disabled=true);
+  }else if(pausado){
+    badge.className='estado-badge urgente-b'; badge.textContent='⏸ En pausa';
+    btnI.disabled=true; btnP.disabled=false; btnP.className='btn-m btn-pausa pausado';
+    btnP.textContent='▶ Reanudar';
+    tBtns.forEach(id=>document.getElementById(id).disabled=true);
+  }else if(tiempoAgotado){
+    badge.className='estado-badge agotado'; badge.textContent='⏰ Tiempo agotado';
+    btnI.disabled=true; btnP.disabled=true;
+    tBtns.forEach(id=>document.getElementById(id).disabled=true);
+  }else{
+    badge.className='estado-badge activo'; badge.textContent='▶ En curso';
+    btnI.disabled=true; btnP.disabled=false; btnP.className='btn-m btn-pausa';
+    btnP.textContent='⏸ Pausar';
+    tBtns.forEach(id=>document.getElementById(id).disabled=false);
+    iniciarCronoM();
+  }
+}
+
+// ── Mensajes ──
+window.preset=function(t){ document.getElementById('msg-input').value=t; document.getElementById('msg-input').focus(); };
+window.enviarMsg=async function(){
+  const t=document.getElementById('msg-input').value.trim(); if(!t)return;
+  await guardar({mensaje_maestro:t,mensaje_ts:Date.now()});
+  const ok=document.getElementById('msg-ok'); ok.classList.add('show');
+  setTimeout(()=>ok.classList.remove('show'),2500);
+  addLog('info',`💬 Enviado: <em>"${t}"</em>`);
+};
+window.borrarMsg=async function(){
+  await guardar({mensaje_maestro:'',mensaje_ts:0});
+  document.getElementById('msg-input').value='';
+  addLog('info','Mensaje borrado.');
+};
+
+// ── Edición de respuestas ──
+function renderEditCards(){
+  const grid=document.getElementById('edit-grid'); grid.innerHTML='';
+  PRUEBAS.forEach(p=>{
+    const card=document.createElement('div'); card.className='edit-card';
+    card.innerHTML=`
+      <div class="edit-header">
+        <span class="edit-emoji">${p.emoji}</span>
+        <div><div class="edit-num">Prueba ${p.id} · ${p.tipo==='contar'?'Contar':'Acertijo'}</div><div class="edit-titulo">${p.titulo}</div></div>
+      </div>
+      <input class="edit-input" id="resp-${p.id}" type="text" maxlength="20"
+        value="${respuestasEditadas[p.id]||p.respuesta}"
+        placeholder="Respuesta..."
+        oninput="respuestasEditadas[${p.id}]=this.value.toUpperCase();this.value=this.value.toUpperCase();">
+      <div class="edit-nota">${p.tipo==='contar'?'Número de objetos en la sala':'Solución del puzzle físico'}</div>`;
+    grid.appendChild(card);
+  });
+
+  // Card especial para el código final
+  const cardFinal=document.createElement('div');
+  cardFinal.className='edit-card';
+  cardFinal.style.cssText='border-color:rgba(232,67,147,0.4);background:rgba(232,67,147,0.05);grid-column:1/-1;';
+  cardFinal.innerHTML=`
+    <div class="edit-header">
+      <span class="edit-emoji">🎭</span>
+      <div>
+        <div class="edit-num" style="color:var(--love)">CÓDIGO FINAL · Se muestra al completar las 9 pruebas</div>
+        <div class="edit-titulo">Revelación Final — El código secreto</div>
+      </div>
+    </div>
+    <textarea class="edit-input" id="resp-final" maxlength="300" rows="3"
+      placeholder="Escribe aquí la frase o mensaje final..."
+      style="border-color:rgba(232,67,147,0.5);font-size:16px;letter-spacing:1px;resize:vertical;line-height:1.5;height:auto;text-transform:none;"
+      oninput="codigoFinal=this.value;">${codigoFinal}</textarea>
+    <div class="edit-nota">Este mensaje aparece en la pantalla del jugador cuando supera las 9 pruebas. Puede ser una frase larga, instrucción o contraseña final (máx. 300 caracteres).</div>`;
+  grid.appendChild(cardFinal);
+}
+
+window.guardarRespuestas=async function(){
+  const resp={};
+  PRUEBAS.forEach(p=>{
+    const inp=document.getElementById(`resp-${p.id}`);
+    if(inp){ resp[p.id]=inp.value.trim().toUpperCase(); p.respuesta=resp[p.id]; }
+  });
+  const inpFinal=document.getElementById('resp-final');
+  if(inpFinal) codigoFinal=inpFinal.value.trim();
+  await guardar({respuestas:resp, codigo_final:codigoFinal});
+  const ok=document.getElementById('edit-ok'); ok.classList.add('show');
+  setTimeout(()=>ok.classList.remove('show'),2500);
+  addLog('info','✏️ Respuestas y código final actualizados y sincronizados.');
+};
+
+// ── Render maestro ──
+function renderMaestro(data){
+  const res=data.resueltas||[], int=data.intentosPorPrueba||{};
+  const nOk=res.length, nPend=PRUEBAS.length-nOk;
+  let nF=0; PRUEBAS.forEach(p=>{const t=int[p.id]||0,r=res.includes(p.id)?1:0;nF+=Math.max(0,t-r);});
+  const pct=Math.round(nOk/PRUEBAS.length*100);
+  document.getElementById('s-ok').textContent=nOk;
+  document.getElementById('s-pend').textContent=nPend;
+  document.getElementById('s-fallos').textContent=nF;
+  document.getElementById('s-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+
+  // Puntos de progreso
+  const pts=document.getElementById('prog-pts'); pts.innerHTML='';
+  PRUEBAS.forEach(p=>{
+    const done=res.includes(p.id);
+    const d=document.createElement('div'); d.className='prog-pt'+(done?' done':'');
+    d.textContent=done?'✓':p.emoji; d.title=p.titulo; pts.appendChild(d);
+  });
+  const pf=document.createElement('div'); pf.className='prog-pt final'+(nOk===PRUEBAS.length?' done':'');
+  pf.textContent='🎭'; pts.appendChild(pf);
+
+  // Tabla
+  const tbody=document.getElementById('tabla-body'); tbody.innerHTML='';
+  PRUEBAS.forEach(p=>{
+    const r=res.includes(p.id), ni=int[p.id]||0, nfa=r?Math.max(0,ni-1):ni;
+    let dots=''; const mx=Math.min(ni,8);
+    for(let i=0;i<mx;i++) dots+=`<div class="idot ${r&&i===ni-1?'ok':'f'}"></div>`;
+    if(ni>8) dots+=`<span style="font-size:10px;color:var(--text-muted)">+${ni-8}</span>`;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-size:11px;color:var(--text-muted)">${p.id}</td>
+      <td style="font-size:18px">${p.emoji}</td>
+      <td style="font-family:'Playfair Display',serif;font-size:13px">${p.titulo}</td>
+      <td><span style="font-size:10px;color:var(--text-muted);font-style:italic">${p.tipo==='contar'?'🔍 Contar':'🧩 Acertijo'}</span></td>
+      <td>${r?'<span class="badge ok">✓ SUPERADA</span>':ni>0?'<span class="badge pen">⟳ EN CURSO</span>':'<span class="badge lck">— PENDIENTE</span>'}</td>
+      <td><span class="resp-badge">${p.respuesta||'—'}</span></td>
+      <td><div class="dot-bar">${dots||'<span style="font-size:10px;color:var(--text-muted)">—</span>'}${ni>0?`<span style="font-size:10px;color:var(--text-dim);margin-left:4px">${ni}</span>`:''}</div>${nfa>0?`<span style="font-size:10px;color:var(--red);font-style:italic">${nfa} fallo(s)</span>`:''}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  if(nOk===PRUEBAS.length) document.getElementById('final-banner').classList.add('show');
+  else document.getElementById('final-banner').classList.remove('show');
+}
+
+function detectarCambios(nuevo){
+  const rN=nuevo.resueltas||[], rA=ultimoEstado.resueltas||[];
+  const iN=nuevo.intentosPorPrueba||{}, iA=ultimoEstado.intentosPorPrueba||{};
+  rN.forEach(id=>{
+    if(!rA.includes(id)){
+      const p=PRUEBAS.find(x=>x.id===id);
+      addLog('ok',`<strong>${p?.emoji} ${p?.titulo}</strong> superada con ${iN[id]||'?'} intento(s).`);
+    }
+  });
+  PRUEBAS.forEach(p=>{
+    const a=iA[p.id]||0, b=iN[p.id]||0;
+    if(b>a&&!rN.includes(p.id)) addLog('fail',`Fallo en <strong>${p.emoji} ${p.titulo}</strong>. Total intentos: ${b}.`);
+  });
+  ultimoEstado=JSON.parse(JSON.stringify(nuevo));
+}
+
+function addLog(tipo,texto){
+  const list=document.getElementById('log-list');
+  const item=document.createElement('div'); item.className='log-item';
+  item.innerHTML=`<div class="ldot ${tipo}"></div><div class="ltext">${texto}</div><div class="lhora">${hora()}</div>`;
+  list.insertBefore(item,list.firstChild);
+  while(list.children.length>60) list.removeChild(list.lastChild);
+}
+window.limpiarLog=function(){ document.getElementById('log-list').innerHTML=''; addLog('info','Log limpiado.'); };
+
+function setConn(st){
+  const dot=document.getElementById('conn-dot'), txt=document.getElementById('conn-text');
+  const live=document.getElementById('live-ind');
+  if(st==='ok'){dot.className='conn-dot ok';txt.textContent='EN VIVO';live.style.display='inline-flex';}
+  if(st==='err'){dot.className='conn-dot err';txt.textContent='Sin conexión';live.style.display='none';}
+  if(st==='wait'){dot.className='conn-dot wait';txt.textContent='Conectando...';live.style.display='none';}
+}
+
+// ── Arranque ──
+document.getElementById('hora-ini').textContent=hora();
+renderEditCards();
+conectar({
+  apiKey:"AIzaSyD6WPMALoBWUPPYAkbT0MXkeUtT6tVT7F0",
+  authDomain:"escaperoomprueba.firebaseapp.com",
+  projectId:"escaperoomprueba",
+  storageBucket:"escaperoomprueba.appspot.com",
+  messagingSenderId:"370330539854",
+  appId:"1:370330539854:web:0bb275c4e1a4b1fdb8301f"
+});
+</script>
+</body>
+</html>
